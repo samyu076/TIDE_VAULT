@@ -4,6 +4,8 @@ TideVault is a comprehensive, full-stack solution designed for the systematic ca
 
 ## 🚀 Key Advantages
 
+[![Deploy to Render](https://render.com/images/deploy-to-render.button.svg)](https://render.com/deploy?repo=https://github.com/samyu076/TIDE_VAULT)
+
 - **Dual-Capability Architecture:** Operates as both a high-performance **GIS Spatial Database** and a **Web-Enabled Portal**.
 - **Automated Discovery:** OS-level scanning for seamless dataset ingestion and registration.
 - **Temporal Continuity Audit:** Mathematical analysis of High Tide Line (HTL) drift across survey epochs (2011 ↔ 2019).
