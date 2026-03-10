@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --ocean-950: #060f1a;
+    --ocean-900: #0a1628;
+    --ocean-800: #0f2040;
+    --ocean-700: #1a3a5c;
+    --ocean-600: #1e4a72;
+    --teal-500: #1a9e8f;
+    --teal-400: #22c4b3;
+    --teal-300: #5dd8cc;
+    --coral-500: #e05c3a;
+    --coral-400: #f07a5a;
+    --gold-500: #c9a84c;
+    --gold-400: #e0c060;
+    --text-100: #e8f4f8;
+    --text-300: #a8c8d8;
+    --text-500: #7aa3b8;
+  }
+
+  body {
+    @apply bg-ocean-950 text-text-100 font-body antialiased;
+    margin: 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display font-bold;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-ocean-800/40 backdrop-blur-md border border-ocean-700/50 rounded-xl;
+  }
+
+  .btn-primary {
+    @apply bg-teal-500 hover:bg-teal-400 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105;
+  }
+
+  .badge {
+    @apply font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full border;
+  }
+
+  .data-row {
+    @apply border-b border-ocean-700/30 hover:bg-ocean-700/20 transition-colors;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ocean-950);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ocean-700);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--teal-500);
+}
+
+.leaflet-container {
+  @apply rounded-xl border border-ocean-700;
+  background: #0a1628 !important;
+}
+
+@keyframes scanProgress {
+  0% {
+    width: 0%;
+    margin-left: 0%;
+  }
+
+  50% {
+    width: 60%;
+    margin-left: 20%;
+  }
+
+  100% {
+    width: 0%;
+    margin-left: 100%;
+  }
+}

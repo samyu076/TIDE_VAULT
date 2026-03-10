@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+geopandas
+fiona
+shapely
+pyproj
+pandas
+pydantic
+python-multipart
+jinja2
