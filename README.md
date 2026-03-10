@@ -1,111 +1,54 @@
-# TideVault — Coastal Intelligence System
+# 🌊 TideVault: Coastal Geospatial Intelligence & Governance Framework
 
-> *"Most teams catalogue coastal data. We evaluate its continuity, legal compliance, and trust-decay over time."*
+TideVault is a comprehensive, full-stack solution designed for the systematic cataloguing, integration, and documentation of multi-temporal coastal geospatial datasets. Developed for the 2026 National Hackathon, it addresses the critical need for shoreline continuity and regulatory traceability.
 
-**National Hackathon 2026 | Maharashtra Coast | Geospatial Framework**
+## 🚀 Key Advantages
 
----
+- **Dual-Capability Architecture:** Operates as both a high-performance **GIS Spatial Database** and a **Web-Enabled Portal**.
+- **Automated Discovery:** OS-level scanning for seamless dataset ingestion and registration.
+- **Temporal Continuity Audit:** Mathematical analysis of High Tide Line (HTL) drift across survey epochs (2011 ↔ 2019).
+- **ISO Standardized Documentation:** Automated generation of ISO-19115 compliant metadata.
+- **TRI Engine:** Introducing the **Temporal Reliability Index**, a heuristic model for quantifying dataset trust and sustainability.
 
-## 🌊 Executive Summary
-TideVault is a full-stack coastal geospatial intelligence framework designed for the systematic cataloguing, audit, and traceability of multi-temporal coastal datasets. It solves the "Static Data Trap" by treating geospatial layers not just as files, but as living, decaying assets that require constant continuity verification.
+## 🛠️ Technology Stack
 
-### 🏗️ Problem Statement Alignment
-- **Systematic Cataloguing:** Automated discovery and metadata extraction from diverse shapefile sources.
-- **Interoperability:** ISO 19115 compliant metadata generation and OGC-ready schemas.
-- **Traceability:** Segment-level High Tide Line (HTL) continuity matrices across temporal scales (2011 vs 2019).
-- **Sustainability:** A Dynamic Governance framework that calculates data trust-decay and predicts re-survey requirements.
+- **Backend:** FastAPI, Python 3.10+, Uvicorn (Asynchronous Processing)
+- **Geospatial Engine:** GeoPandas, Shapely, PyProj (CRS: EPSG:32643 to WGS84)
+- **Frontend:** React 18, Leaflet.js, Lucide Icons
+- **Design:** Custom Glassmorphism UI built with Vanilla CSS
+- **Data:** ESRI Shapefiles (.shp), GeoJSON, ISO XML
 
----
+## 📋 Problem Statement Compliance
 
-## 🚀 Features Built
-### 1. Auto-Discovery Framework
-- **Dynamic Scanning:** backend/core/data_loader.py recursively scans the filesystem for .shp files, automatically registering them into the vault.
-- **Metadata Inferencing:** Automatically extracts site names (Location A/B) and survey years (2011/2019) from filenames and directory structures.
+TideVault is 100% compliant with the official problem statement:
+- **Systematic Cataloguing:** Automated discovery and indexing.
+- **Traceability:** Vector-level auditing of shoreline changes.
+- **Interoperability:** Standardized ISO documentation.
+- **Sustainability:** Long-term governance via the TRI scoring system.
 
-### 2. TRI-Coast Engine (Temporal Reliability Index)
-- **Trust Formula:** A proprietary weighted scoring algorithm that evaluates dataset reliability based on:
-  - **Temporal Decay (30%)**: Age of survey vs current planning year.
-  - **Update Frequency (25%)**: Historical continuity of updates.
-  - **Spatial Accuracy (25%)**: Geometry audit (zero-length checks, duplication).
-  - **Compliance (20%)**: CRS and Attribute schema validity.
+## 🚦 Getting Started
 
-### 3. HTL Continuity Matrix
-- **Traceability Bridge:** Cross-epoch segment analysis to detect "drifting" shorelines.
-- **Audit Feed:** Identifies OBJECTID duplications and geometry errors that could break legal traceability.
+### Prerequisites
+- Python 3.10+
+- Node.js & npm
 
-### 4. Metadata Vault (ISO 19115)
-- **Standards-First:** Dynamic generation of ISO-compliant XML metadata for every discovered asset.
-- **Interoperability:** Support for GeoJSON and Data Dictionary exports to ensure multi-agency use.
-
-### 5. Governance Intelligence
-- **Regulatory Countdown:** Real-time visibility into "Data Sunset" — when datasets lose legal validity per CRZ notifications.
-- **Algorithmic Recommendations:** Hands-on advice for GIS analysts on fixing specific topological errors found in the vault.
-
----
-
-## 🔬 Data Quality Findings (Audit Results)
-During the framework implementation, our engines identified several critical issues in the provided datasets:
-- **Location B (2019):** Found 4 duplicate OBJECTIDs (OID 635) which breaks segment-level traceability.
-- **Location A (2011):** 78 features detected with Zero Geometry (Shape_Leng = 0).
-- **Convergence:** HTL-drift detected in Location A Sector 4, indicating either erosion or survey calibration error.
-
----
-
-## 🛠️ Quick Start
-
-### 1. Prerequisites
-- Python 3.9+
-- Node.js 18+
-
-### 2. Fast Launch (All-in-One)
-**Windows:**
-```bash
-./start.bat
-```
-**Linux/macOS:**
-```bash
-chmod +x start.sh
-./start.sh
-```
-
-### 3. Manual Setup
-**Backend:**
-```bash
-cd backend
-pip install -r requirements.txt
-uvicorn main:app --reload
-```
-**Frontend:**
-```bash
-cd frontend
-npm install
-npm run dev
-```
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/samyu076/TIDE_VAULT.git
+   ```
+2. Setup Backend:
+   ```bash
+   cd backend
+   pip install -r requirements.txt
+   uvicorn main:app --reload
+   ```
+3. Setup Frontend:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
 
 ---
-
-## 🧬 Tech Stack
-- **Backend:** FastAPI (Python), GeoPandas, Shapely, PyProj.
-- **Frontend:** React, Vite, TailwindCSS, Framer Motion, Recharts.
-- **GIS Core:** Coordinate projection (EPSG:32643), ISO 19115 Standards.
-
----
-
-## 📂 Project Structure
-```text
-TideVault (Root)
-├── data/                  # Source Shapefiles (Location A & B)
-├── backend/
-│   ├── core/              # Engines: TRI, Continuity, Discovery
-│   ├── routers/           # API Endpoints
-│   └── main.py            # FastAPI Entry
-├── frontend/
-│   ├── src/
-│   │   ├── pages/         # Dashboard, TRI, Intelligence, Governance
-│   │   ├── components/    # Reusable UI Blocks
-│   │   └── assets/        # TideVault Branding
-└── README.md              # Project Documentation
-```
-
----
-**Developed for the Maharashtra Coastal Governance Hackathon 2026.**
+*Developed for the National Hackathon 2026.*
