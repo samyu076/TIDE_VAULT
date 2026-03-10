@@ -1,4 +1,6 @@
 name: Build and Deploy Frontend
+permissions:
+  contents: write
 on:
   push:
     branches: [ main ]
