@@ -69,6 +69,10 @@ export default function MetadataVault() {
 
     if (loading || !dataset) return <LoadingScreen message="TideVault — Mounting ISO 19115 Vault..." />;
 
+    // Defensive check to prevent crash if data structure is partially broken
+    const safeFields = Array.isArray(dataset?.fields) ? dataset.fields : [];
+    const safeBbox = Array.isArray(dataset?.bbox_wgs84) ? dataset.bbox_wgs84 : [72.8, 18.9, 73.0, 19.2];
+
     return (
         <div className="space-y-8 animate-in slide-in-from-right duration-700">
             {/* Header: Dataset Selection & Export */}
@@ -80,7 +84,7 @@ export default function MetadataVault() {
                         onChange={(e) => setSelectedId(e.target.value)}
                         className="bg-transparent border-none outline-none text-sm font-bold font-display italic text-text-100 pr-4"
                     >
-                        {datasets.map(d => <option key={d.id} value={d.id}>{d.id}</option>)}
+                        {Array.isArray(datasets) ? datasets.map(d => <option key={d?.id} value={d?.id}>{d?.id || 'ID_Unknown'}</option>) : null}
                     </select>
                 </div>
 
@@ -103,46 +107,45 @@ export default function MetadataVault() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Visual Metadata Summary */}
                 <div className="lg:col-span-4 space-y-6">
-                    <div className="glass-card p-6 overflow-hidden relative border-t-4 border-teal-500">
-                        <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center space-x-3">
-                                <ShieldCheck size={20} className="text-teal-400" />
-                                <h3 className="text-sm font-bold uppercase tracking-widest italic">ISO Identity Proof</h3>
-                            </div>
-                            <button className="text-[10px] font-mono text-teal-500 hover:text-teal-300 transition-colors uppercase font-bold border border-teal-500/20 px-2 py-1 rounded">Copy XML</button>
+                    <div className="glass-card p-6 overflow-hidden relative">
+                        <div className="flex items-center space-x-3 mb-6">
+                            <ShieldCheck size={20} className="text-teal-400" />
+                            <h3 className="text-sm font-bold uppercase tracking-widest italic">Core Identification</h3>
                         </div>
                         <div className="space-y-4 relative z-10">
                             {[
-                                { label: 'ISO UID', val: dataset.file_id },
-                                { label: 'Catalogue Standard', val: 'ISO 19115:2003' },
-                                { label: 'Spatial Schema', val: 'Vector (LineString)' },
-                                { label: 'Projection Authority', val: `EPSG:${dataset.epsg}` },
-                                { label: 'BBox Status', val: 'Verified (WGS84)' },
+                                { label: 'File Identifier', val: dataset?.file_id || 'N/A' },
+                                { label: 'Schema Version', val: dataset?.schema_version || 'N/A' },
+                                { label: 'CRS Authority', val: dataset?.epsg ? `EPSG:${dataset.epsg}` : 'N/A' },
+                                { label: 'Survey Year', val: dataset?.year || 'N/A' },
+                                { label: 'Feature Count', val: dataset?.feature_count || 0 },
                             ].map(it => (
                                 <div key={it.label} className="flex justify-between items-baseline border-b border-ocean-800/30 pb-2">
                                     <span className="text-[10px] text-text-500 font-mono uppercase italic">{it.label}</span>
-                                    <span className="text-[11px] font-bold text-text-100 font-mono tracking-tighter truncate max-w-[150px]">{it.val}</span>
+                                    <span className="text-[11px] font-bold text-text-100 font-mono tracking-tighter tracking-tightest">{it.val}</span>
                                 </div>
                             ))}
                         </div>
-                        <div className="absolute right-0 bottom-0 p-4 opacity-5 pointer-events-none text-teal-500">
-                            <Database size={140} />
+                        <div className="absolute right-0 bottom-0 p-4 opacity-5 pointer-events-none">
+                            <Box size={140} />
                         </div>
                     </div>
 
-                    <div className="glass-card p-6 bg-teal-500/5 border border-teal-500/20">
+                    <div className="glass-card p-6 border-b-4 border-teal-500">
                         <div className="flex items-center space-x-3 mb-4">
-                            <FileCode size={18} className="text-teal-400" />
-                            <h4 className="text-[10px] font-mono text-teal-400 uppercase tracking-widest font-bold">GIS Schema Audit</h4>
+                            <CheckCircle2 size={18} className="text-teal-400" />
+                            <h4 className="text-[10px] font-mono text-text-500 uppercase tracking-widest font-bold">ISO Compliance Check</h4>
                         </div>
-                        <p className="text-[10px] text-text-400 font-mono leading-relaxed mb-4 italic">
-                            The backend GeoPandas engine has validated the topological integrity of the {dataset.feature_count} features stored in this spatial registry.
-                        </p>
-                        <div className="space-y-2">
-                            {['Topological Continuity', 'FID Index Mapping', 'Attribute Synchronization'].map(check => (
-                                <div key={check} className="flex items-center space-x-2 text-[10px] font-mono text-text-200">
-                                    <div className="w-1 h-1 rounded-full bg-teal-400"></div>
-                                    <span>{check}: SUCCESS</span>
+                        <div className="space-y-3">
+                            {[
+                                { tag: 'gmd:identificationInfo', ok: true },
+                                { tag: 'gmd:dataQualityInfo', ok: (dataset?.quality_score || 0) > 60 },
+                                { tag: 'gmd:referenceSystemInfo', ok: !!dataset?.epsg },
+                                { tag: 'gmd:distributionInfo', ok: false },
+                            ].map(tag => (
+                                <div key={tag.tag} className="flex items-center justify-between text-[11px] font-mono uppercase bg-ocean-950/50 p-2 rounded">
+                                    <span className="text-text-400 truncate opacity-70">{"<"}{tag.tag}{">"}</span>
+                                    {tag.ok ? <span className="text-teal-400 font-bold">Valid</span> : <span className="text-coral-500 font-bold">Incomplete</span>}
                                 </div>
                             ))}
                         </div>
@@ -163,7 +166,7 @@ export default function MetadataVault() {
                                 <p className="text-text-600">{"<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\">"}</p>
                                 <div className="pl-4">
                                     <p>{"<gmd:fileIdentifier>"}</p>
-                                    <p className="pl-4 text-gold-400 italic">{"<gco:CharacterString>"}{dataset.file_id || 'TideVault_ISO19115_A2019'}{"</gco:CharacterString>"}</p>
+                                    <p className="pl-4 text-gold-400 italic">{"<gco:CharacterString>"}{dataset?.file_id || 'TideVault_ISO19115_Internal'}{"</gco:CharacterString>"}</p>
                                     <p>{"</gmd:fileIdentifier>"}</p>
                                     <p>{"<gmd:language>"}</p>
                                     <p className="pl-4 text-gold-400 italic">{"<gmd:LanguageCode codeListValue=\"eng\">English</gmd:LanguageCode>"}</p>
@@ -172,7 +175,7 @@ export default function MetadataVault() {
                                     <p className="pl-4 text-gold-400 italic">{"<gmd:MD_ScopeCode codeListValue=\"dataset\" />"}</p>
                                     <p>{"</gmd:hierarchyLevel>"}</p>
                                     <p>{"<gmd:dateStamp>"}</p>
-                                    <p className="pl-4 text-gold-400 italic">{"<gco:DateTime>"}{dataset.last_computed}{"</gco:DateTime>"}</p>
+                                    <p className="pl-4 text-gold-400 italic">{"<gco:DateTime>"}{dataset?.last_computed || new Date().toISOString()}{"</gco:DateTime>"}</p>
                                     <p>{"</gmd:dateStamp>"}</p>
                                     <p className="py-2 text-text-700 italic">{"<!-- [TRUNCATED] ISO 19139 Dynamic Body Generation Active -->"}</p>
                                 </div>
@@ -184,10 +187,10 @@ export default function MetadataVault() {
                                 <pre>{JSON.stringify({
                                     type: "FeatureCollection",
                                     metadata: {
-                                        id: dataset.id,
-                                        file_id: dataset.file_id || 'TideVault_export_C2019',
-                                        bbox_wgs84: dataset.bbox_wgs84,
-                                        quality: dataset.quality_score,
+                                        id: dataset?.id,
+                                        file_id: dataset?.file_id || 'TideVault_export_Internal',
+                                        bbox_wgs84: safeBbox,
+                                        quality: dataset?.quality_score || 0,
                                         tri_index: 68.4
                                     },
                                     features: "[...]"
@@ -201,13 +204,15 @@ export default function MetadataVault() {
                                     <span>Type</span>
                                     <span>ISO Status</span>
                                 </div>
-                                {dataset.fields.map(f => (
+                                {safeFields.length > 0 ? safeFields.map(f => (
                                     <div key={f} className="grid grid-cols-3 gap-2 py-0.5 group">
                                         <span className="text-text-100 font-bold group-hover:text-teal-400">{f}</span>
                                         <span className="text-text-400 opacity-60 italic">{f === 'OBJECTID' ? 'Int64' : 'String(254)'}</span>
                                         <span className="text-teal-500/50">Compliant</span>
                                     </div>
-                                ))}
+                                )) : (
+                                    <div className="text-text-600 italic py-4">No field dictionary available for this layer.</div>
+                                )}
                             </div>
                         )}
                     </div>

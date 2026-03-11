@@ -60,7 +60,7 @@ export default function App() {
 
     return (
         <CoastProvider>
-            <BrowserRouter>
+            <BrowserRouter basename={import.meta.env.DEV ? '/' : '/TIDE_VAULT'}>
                 <div className="flex min-h-screen bg-ocean-950 text-text-200">
 
                     {/* Sidebar */}
