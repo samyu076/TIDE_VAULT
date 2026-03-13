@@ -72,8 +72,9 @@ def detect_anomalies():
             "anomaly_score": int(preds[i]),
             "confidence": float(confidence),
             "status": "ANOMALY" if is_anomaly else "NORMAL",
-            # Centroid for map markers
-            "centroid": [row["geometry"].centroid.y, row["geometry"].centroid.x] if row["geometry"] else None
+            # Centroid for map markers - provide explicit lat/lng for frontend
+            "lat": row["geometry"].centroid.y if (row["geometry"] and not row["geometry"].is_empty) else None,
+            "lng": row["geometry"].centroid.x if (row["geometry"] and not row["geometry"].is_empty) else None
         })
         
     return results

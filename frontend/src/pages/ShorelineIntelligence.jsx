@@ -77,7 +77,9 @@ export default function ShorelineIntelligence() {
 
                 setHtlData(htlRes.data || FALLBACK_HTL[activeSite]);
                 setCompData(compRes.data);
-                setAnomalies(mlRes.data || []);
+                // Ensure anomalies have valid coordinates before setting state
+                const validAnomalies = (mlRes.data || []).filter(a => a && typeof a.lat === 'number' && typeof a.lng === 'number');
+                setAnomalies(validAnomalies);
             } catch (err) {
                 console.warn(`API fetches failed. Using fallbacks.`);
                 setHtlData(FALLBACK_HTL[activeSite]);
@@ -240,8 +242,8 @@ export default function ShorelineIntelligence() {
                             <LayersControl.Overlay checked name="⚡ ML ANOMALIES">
                                 <LayerGroup>
                                     {anomalies
-                                        .filter(a => a.status === 'ANOMALY')
-                                        .slice(0, 10) // Limit for visualization
+                                        .filter(a => a.status === 'ANOMALY' && a.lat != null && a.lng != null)
+                                        .slice(0, 15)
                                         .map((a, i) => (
                                             <Marker 
                                                 key={i} 
