@@ -9,23 +9,26 @@ import TideVaultLogo from '../assets/TideVaultLogo';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Fix Leaflet marker icon paths that fail in Vite
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+// Custom SVG Marker Icon to avoid broken image links
+const createCustomIcon = (color) => L.divIcon({
+    className: 'custom-marker',
+    html: `
+        <div style="
+            background-color: ${color};
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 10px ${color}88;
+        "></div>
+    `,
+    iconSize: [14, 14],
+    iconAnchor: [7, 7]
 });
 
-// Custom icons for ML anomalies
-const anomalyIcon = new L.Icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-});
+const anomalyIcon = createCustomIcon('#EF4444');
+const baseIcon = createCustomIcon('#1a9e8f');
+
 
 const LoadingScreen = ({ message }) => (
     <div style={{
@@ -220,7 +223,7 @@ export default function ShorelineIntelligence() {
                     >
                         <TileLayer 
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png" 
+                            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png"
                         />
                         <LayersControl position="topright">
                             <LayersControl.Overlay checked name="HTL 2011 (Historic)">

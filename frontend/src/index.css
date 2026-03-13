@@ -77,7 +77,6 @@
 
 .leaflet-container {
   @apply rounded-xl border border-ocean-700;
-  background: #0a1628 !important;
 }
 
 @keyframes scanProgress {

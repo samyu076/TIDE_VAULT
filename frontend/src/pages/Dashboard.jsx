@@ -8,13 +8,24 @@ import { motion } from 'framer-motion';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
-// Fix Leaflet marker icon paths that fail in Vite
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+// Custom SVG Marker Icon to avoid broken image links
+const createCustomIcon = (color) => L.divIcon({
+    className: 'custom-marker',
+    html: `
+        <div style="
+            background-color: ${color};
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 10px ${color}88;
+        "></div>
+    `,
+    iconSize: [12, 12],
+    iconAnchor: [6, 6]
 });
+
+const defaultIcon = createCustomIcon('#1a9e8f');
 
 const StatCard = ({ icon: Icon, label, value, subValue, color, delay = 0 }) => (
     <motion.div 
@@ -191,7 +202,11 @@ export default function Dashboard() {
                             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png" 
                         />
                         {datasets.map(d => (
-                            <Marker key={d.id} position={[19.07 + (Math.random() * 0.1), 72.87 + (Math.random() * 0.1)]}>
+                            <Marker 
+                                key={d.id} 
+                                position={[19.07 + (Math.random() * 0.1), 72.87 + (Math.random() * 0.1)]}
+                                icon={defaultIcon}
+                            >
                                 <Popup>
                                     <div className="font-mono text-xs p-1">
                                         <div className="font-bold border-b border-gray-200 mb-1">{d.site}</div>
