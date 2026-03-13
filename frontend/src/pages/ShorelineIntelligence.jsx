@@ -206,9 +206,12 @@ export default function ShorelineIntelligence() {
                         key={activeSite}
                         center={activeSite === 'location_a' ? [19.29, 72.87] : [19.19, 72.85]}
                         zoom={13}
-                        style={{ height: '100%', width: '100%', filter: 'invert(100%) hue-rotate(180deg) brightness(0.9) contrast(0.9)' }}
+                        style={{ height: '100%', width: '100%' }}
                     >
-                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                        <TileLayer 
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" 
+                        />
                         <LayersControl position="topright">
                             <LayersControl.Overlay checked name="HTL 2011 (Historic)">
                                 <LayerGroup>

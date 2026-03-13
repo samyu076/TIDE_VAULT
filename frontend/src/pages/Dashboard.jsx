@@ -176,8 +176,11 @@ export default function Dashboard() {
 
                 {/* Live Map Preview (Condensed) */}
                 <div className="lg:col-span-8 h-[400px] glass-card overflow-hidden relative">
-                    <MapContainer center={[19.29, 72.87]} zoom={11} style={{ height: '100%', width: '100%', filter: 'invert(100%) hue-rotate(180deg) brightness(0.9) contrast(0.9)' }} zoomControl={false}>
-                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    <MapContainer center={[19.29, 72.87]} zoom={11} style={{ height: '100%', width: '100%' }} zoomControl={false}>
+                        <TileLayer 
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" 
+                        />
                         {datasets.map(d => (
                             <Marker key={d.id} position={[19.07 + (Math.random() * 0.1), 72.87 + (Math.random() * 0.1)]}>
                                 <Popup>
