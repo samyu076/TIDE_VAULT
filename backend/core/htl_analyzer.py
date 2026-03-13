@@ -1,4 +1,7 @@
 from core.data_loader import load_dataset
+import geopandas as gpd
+from shapely.geometry import LineString, MultiLineString
+import json
 
 def analyze_htl_continuity(site: str) -> dict:
     if site == "location_a":
@@ -34,6 +37,43 @@ def analyze_htl_continuity(site: str) -> dict:
 
     unique_2011 = dedup(htl_2011)
     unique_2019 = dedup(htl_2019)
+
+    def extract_coords(records):
+        coords = []
+        for r in records:
+            # We need the geometry from the GDF, but records only has attributes.
+            # However, the data_loader already converted it to GeoJSON.
+            # For efficiency, let's just use the geojson field from the loaded dataset.
+            pass
+        return coords
+
+    # Load datasets again to get full GeoJSON for geometry extraction
+    full_2011 = ds_2011["geojson"]
+    full_2019 = ds_2019["geojson"]
+
+    def get_lines(geojson_data):
+        lines = []
+        for feat in geojson_data["features"]:
+            # Recalculate HTL filtering at geometry level if needed, 
+            # but usually htl_2011 records are already filtered.
+            # To be safe, let's filter again based on the same logic as get_htl.
+            props = feat["properties"]
+            feat_name = props.get("Feature_Na","") or ""
+            label = props.get("Label","") or ""
+            if (feat_name.upper() in ["HTL","SEA","CREEK"] or 
+                "tide line" in label.lower() or 
+                "high tide" in label.lower()):
+                geom = feat["geometry"]
+                if geom["type"] == "LineString":
+                    # Flip to [lat, lng] for Leaflet
+                    lines.append([[p[1], p[0]] for p in geom["coordinates"]])
+                elif geom["type"] == "MultiLineString":
+                    for part in geom["coordinates"]:
+                        lines.append([[p[1], p[0]] for p in part])
+        return lines
+
+    coords_2011 = get_lines(full_2011)
+    coords_2019 = get_lines(full_2019)
 
     comparison = []
     all_oids = set([r["OBJECTID"] for r in unique_2011] + [r["OBJECTID"] for r in unique_2019])
@@ -92,5 +132,7 @@ def analyze_htl_continuity(site: str) -> dict:
         },
         "duplicates_detected": {"in_2011": dupes_2011, "in_2019": dupes_2019},
         "segment_comparison": comparison,
-        "continuity_score": continuity_score
+        "continuity_score": continuity_score,
+        "coords_2011": coords_2011,
+        "coords_2019": coords_2019
     }

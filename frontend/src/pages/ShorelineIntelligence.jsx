@@ -223,30 +223,30 @@ export default function ShorelineIntelligence() {
                     >
                         <TileLayer 
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png"
+                            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                         />
                         <LayersControl position="topright">
                             <LayersControl.Overlay checked name="HTL 2011 (Historic)">
                                 <LayerGroup>
-                                    <Polyline
-                                        positions={activeSite === 'location_a'
-                                            ? [[19.28, 72.86], [19.29, 72.87], [19.30, 72.88], [19.31, 72.89]]
-                                            : [[19.18, 72.84], [19.19, 72.85], [19.20, 72.86], [19.21, 72.87]]
-                                        }
-                                        pathOptions={{ color: '#F87171', weight: 5, opacity: 0.8 }}
-                                    />
+                                    {htlData.coords_2011.map((coords, idx) => (
+                                        <Polyline
+                                            key={`2011_${idx}`}
+                                            positions={coords}
+                                            pathOptions={{ color: '#F87171', weight: 4, opacity: 0.7 }}
+                                        />
+                                    ))}
                                 </LayerGroup>
                             </LayersControl.Overlay>
 
                             <LayersControl.Overlay checked name="HTL 2019 (Current)">
                                 <LayerGroup>
-                                    <Polyline
-                                        positions={activeSite === 'location_a'
-                                            ? [[19.281, 72.861], [19.291, 72.871], [19.301, 72.881], [19.311, 72.891]]
-                                            : [[19.181, 72.841], [19.191, 72.851], [19.201, 72.861], [19.211, 72.871]]
-                                        }
-                                        pathOptions={{ color: '#2DD4BF', weight: 5, opacity: 0.9 }}
-                                    />
+                                    {htlData.coords_2019.map((coords, idx) => (
+                                        <Polyline
+                                            key={`2019_${idx}`}
+                                            positions={coords}
+                                            pathOptions={{ color: '#2DD4BF', weight: 5, opacity: 0.9 }}
+                                        />
+                                    ))}
                                 </LayerGroup>
                             </LayersControl.Overlay>
 
