@@ -9,6 +9,14 @@ import TideVaultLogo from '../assets/TideVaultLogo';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// Fix Leaflet marker icon paths that fail in Vite
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
 // Custom icons for ML anomalies
 const anomalyIcon = new L.Icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
@@ -104,16 +112,16 @@ export default function ShorelineIntelligence() {
         <div className="space-y-8 animate-in fade-in duration-700">
             {/* Site Selector & Summary */}
             <div className="flex flex-col md:flex-row justify-between items-start gap-6">
-                <div className="flex bg-ocean-950 p-1 rounded-xl border border-ocean-800">
+                <div className="flex bg-ocean-950 p-1.5 rounded-xl border border-teal-500/20 shadow-2xl">
                     <button
                         onClick={() => setActiveSite('location_a')}
-                        className={`px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${activeSite === 'location_a' ? 'bg-teal-500 text-ocean-950 shadow-lg' : 'text-text-500 hover:text-text-300'}`}
+                        className={`px-8 py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${activeSite === 'location_a' ? 'bg-teal-500 text-ocean-950 shadow-[0_0_15px_rgba(45,212,191,0.4)]' : 'text-text-500 hover:text-text-300'}`}
                     >
                         Location A
                     </button>
                     <button
                         onClick={() => setActiveSite('location_b')}
-                        className={`px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${activeSite === 'location_b' ? 'bg-teal-500 text-ocean-950 shadow-lg' : 'text-text-500 hover:text-text-300'}`}
+                        className={`px-8 py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${activeSite === 'location_b' ? 'bg-teal-500 text-ocean-950 shadow-[0_0_15px_rgba(45,212,191,0.4)]' : 'text-text-500 hover:text-text-300'}`}
                     >
                         Location B
                     </button>
@@ -212,7 +220,7 @@ export default function ShorelineIntelligence() {
                     >
                         <TileLayer 
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" 
+                            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png" 
                         />
                         <LayersControl position="topright">
                             <LayersControl.Overlay checked name="HTL 2011 (Historic)">
@@ -222,7 +230,7 @@ export default function ShorelineIntelligence() {
                                             ? [[19.28, 72.86], [19.29, 72.87], [19.30, 72.88], [19.31, 72.89]]
                                             : [[19.18, 72.84], [19.19, 72.85], [19.20, 72.86], [19.21, 72.87]]
                                         }
-                                        pathOptions={{ color: '#e05c3a', weight: 4 }}
+                                        pathOptions={{ color: '#F87171', weight: 5, opacity: 0.8 }}
                                     />
                                 </LayerGroup>
                             </LayersControl.Overlay>
@@ -234,7 +242,7 @@ export default function ShorelineIntelligence() {
                                             ? [[19.281, 72.861], [19.291, 72.871], [19.301, 72.881], [19.311, 72.891]]
                                             : [[19.181, 72.841], [19.191, 72.851], [19.201, 72.861], [19.211, 72.871]]
                                         }
-                                        pathOptions={{ color: '#1a9e8f', weight: 4 }}
+                                        pathOptions={{ color: '#2DD4BF', weight: 5, opacity: 0.9 }}
                                     />
                                 </LayerGroup>
                             </LayersControl.Overlay>

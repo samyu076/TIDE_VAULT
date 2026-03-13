@@ -6,6 +6,15 @@ import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, Polygon, Laye
 import TideVaultLogo from '../assets/TideVaultLogo';
 import { motion } from 'framer-motion';
 import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix Leaflet marker icon paths that fail in Vite
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
 const StatCard = ({ icon: Icon, label, value, subValue, color, delay = 0 }) => (
     <motion.div 
@@ -179,7 +188,7 @@ export default function Dashboard() {
                     <MapContainer center={[19.29, 72.87]} zoom={11} style={{ height: '100%', width: '100%' }} zoomControl={false}>
                         <TileLayer 
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" 
+                            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png" 
                         />
                         {datasets.map(d => (
                             <Marker key={d.id} position={[19.07 + (Math.random() * 0.1), 72.87 + (Math.random() * 0.1)]}>
