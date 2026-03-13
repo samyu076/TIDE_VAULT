@@ -7,6 +7,9 @@ from core.htl_analyzer import analyze_htl_continuity
 from core.crz_engine import compute_crz_compliance
 from core.metadata_generator import generate_iso19115_xml
 from routers.datasets import router as framework_router
+from ml_engine import detect_anomalies
+from spatial_parameters import get_parameters, get_comparison, get_buffer_areas
+from performance_tracker import tracker
 import json
 
 app = FastAPI(title="TideVault API")
@@ -60,6 +63,28 @@ def get_htl_analysis(site: str):
 @app.get("/api/crz/{site}")
 def get_crz_analysis(site: str):
     return compute_crz_compliance(site)
+
+@app.get("/api/ml/anomalies")
+def get_ml_anomalies():
+    return detect_anomalies()
+
+@app.get("/api/parameters/comparison")
+def get_params_comparison():
+    return get_comparison()
+
+@app.get("/api/parameters/{dataset_id}")
+def get_dataset_parameters(dataset_id: str):
+    params = get_parameters(dataset_id)
+    if not params:
+        raise HTTPException(status_code=404, detail="Dataset not found or no parameters")
+    # Also add buffer areas if it's an HTL dataset
+    if "2011" in dataset_id or "2019" in dataset_id:
+        params["buffer_areas"] = get_buffer_areas(dataset_id)
+    return params
+
+@app.get("/api/performance")
+def get_performance_metrics():
+    return tracker.get_report()
 
 @app.get("/api/governance/dashboard")
 def get_governance_data():

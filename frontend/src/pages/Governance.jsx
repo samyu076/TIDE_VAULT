@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useCoast } from '../CoastContext';
 import { FALLBACK_DATASETS } from '../data/fallbackData';
-import { Gavel, ShieldAlert, CheckCircle, ExternalLink, Calendar, TrendingDown, ClipboardList, Info, Globe } from 'lucide-react';
+import { Gavel, ShieldAlert, CheckCircle, ExternalLink, Calendar, TrendingDown, ClipboardList, Info, Globe, Cpu, Server, Layers } from 'lucide-react';
 import TideVaultLogo from '../assets/TideVaultLogo';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 
 const SurveyCountdown = () => {
     const [timeLeft, setTimeLeft] = useState({});
@@ -58,7 +59,7 @@ const SurveyCountdown = () => {
             flexWrap: 'wrap',
             gap: '16px'
         }}>
-            <div>
+            <div className="animate-in fade-in slide-in-from-left duration-500">
                 <div style={{
                     fontFamily: "'IBM Plex Mono', monospace",
                     fontSize: '10px',
@@ -166,6 +167,20 @@ const LegendItem = ({ color, label }) => (
     </div>
 );
 
+const InteropBadge = ({ label, status, icon: Icon }) => (
+    <div className="p-3 bg-ocean-950/80 rounded-xl border border-ocean-800 flex items-center space-x-3 group hover:border-teal-500/50 transition-all">
+        <div className="p-2 bg-ocean-900 rounded-lg text-teal-400 group-hover:scale-110 transition-transform">
+            <Icon size={14} />
+        </div>
+        <div>
+            <div className="text-[10px] font-bold text-text-100 uppercase tracking-tighter leading-tight">{label}</div>
+            <div className={`text-[9px] font-mono font-bold uppercase ${status === 'COMPATIBLE' ? 'text-teal-500' : 'text-gold-500'}`}>
+                {status}
+            </div>
+        </div>
+    </div>
+);
+
 export default function Governance() {
     const { datasets, loading } = useCoast();
     const [govData, setGovData] = useState(null);
@@ -207,7 +222,7 @@ export default function Governance() {
             <SurveyCountdown />
 
             {/* Standards Compliance Matrix */}
-            <div className="glass-card overflow-hidden border-t-4 border-gold-500">
+            <div className="glass-card overflow-hidden border-t-4 border-gold-500 shadow-2xl">
                 <div className="p-6 border-b border-ocean-700 flex justify-between items-center bg-ocean-900/50">
                     <div className="flex items-center space-x-3">
                         <Gavel size={22} className="text-gold-400" />
@@ -247,106 +262,129 @@ export default function Governance() {
                 </div>
             </div>
 
-            {/* Best Practices Grid */}
-            <div>
-                <h3 className="text-lg mb-6 font-display italic uppercase tracking-tighter flex items-center space-x-2">
-                    <ClipboardList size={22} className="text-teal-400" />
-                    <span>Algorithmic Recommendations</span>
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {bestPractices.map(bp => (
-                        <div key={bp.id} className="glass-card p-5 border-t-2 border-teal-500/20 hover:border-teal-400/50 transition-all flex flex-col group shadow-xl">
-                            <span className="text-[10px] text-teal-500 font-mono mb-2 uppercase font-bold italic tracking-widest">Rule #{bp.id}</span>
-                            <h4 className="text-sm font-bold text-text-100 mb-2 leading-tight group-hover:text-teal-400 transition-colors uppercase font-display">{bp.rec}</h4>
-                            <div className="mt-auto bg-ocean-950/50 p-2 rounded border border-ocean-700/50 flex items-start space-x-2">
-                                <Info size={10} className="text-text-500 mt-1 shrink-0" />
-                                <p className="text-[9px] text-text-300 leading-tight italic inline">Triggered by: <span className="font-bold opacity-80">{bp.trigger}</span></p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div >
-
-            {/* Interoperability & Lifecycle */}
-            < div className="grid grid-cols-1 lg:grid-cols-12 gap-8" >
-                <div className="lg:col-span-5 glass-card p-6 flex flex-col relative overflow-hidden bg-gradient-to-br from-ocean-900 to-transparent">
-                    <div className="flex justify-between items-center mb-6 relative z-10">
-                        <h3 className="text-sm font-bold uppercase tracking-widest italic flex items-center shrink-0">
-                            <ExternalLink size={16} className="mr-2 text-teal-400" />
-                            Interoperability Readiness
-                        </h3>
-                    </div>
-                    <div className="space-y-4 relative z-10 flex-1">
-                        {[
-                            { label: 'OGC API Features', status: 'Ready', color: 'text-teal-400', prog: 85 },
-                            { label: 'WMS (Web Map Service)', status: 'Active', color: 'text-teal-400', prog: 100 },
-                            { label: 'NGDI Node Integration', status: 'In Review', color: 'text-gold-500', prog: 60 },
-                            { label: 'ISO 19115:2003', status: 'Compliant', color: 'text-teal-400', prog: 90 },
-                        ].map(it => (
-                            <div key={it.label} className="space-y-1.5 focus-within:translate-x-1 transition-transform">
-                                <div className="flex justify-between text-[11px] font-mono italic">
-                                    <span className="text-text-300 font-bold uppercase tracking-tighter">{it.label}</span>
-                                    <span className={it.color}>{it.status}</span>
-                                </div>
-                                <div className="h-1 bg-ocean-950 rounded-full overflow-hidden border border-ocean-700/50">
-                                    <div className={`h-full ${it.color.replace('text', 'bg')} transition-all duration-1000 ease-out`} style={{ width: `${it.prog}%` }}></div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="absolute bottom-0 right-0 p-4 opacity-[0.03] pointer-events-none">
-                        <Globe size={180} />
-                    </div>
-                </div>
-
-                <div className="lg:col-span-7 glass-card p-6 bg-coral-500/5 border-coral-500/20 flex flex-col h-full items-stretch">
-                    <div className="flex justify-between items-end mb-10">
-                        <div>
-                            <h3 className="text-sm font-bold uppercase tracking-[0.2em] italic flex items-center text-coral-500 drop-shadow-sm">
-                                <Calendar size={18} className="mr-2" />
-                                Critical Survey Lifecycle
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* Interoperability & Lifecycle */}
+                <div className="lg:col-span-4 flex flex-col space-y-6">
+                    <div className="glass-card p-6 flex flex-col relative overflow-hidden bg-gradient-to-br from-ocean-900 to-transparent flex-1">
+                        <div className="flex justify-between items-center mb-6 relative z-10">
+                            <h3 className="text-sm font-bold uppercase tracking-widest italic flex items-center shrink-0">
+                                <ExternalLink size={16} className="mr-2 text-teal-400" />
+                                Protocol Stack
                             </h3>
-                            <p className="text-[10px] text-text-500 font-mono italic uppercase mt-1">Countdown to Regulatory Sunset</p>
                         </div>
-                        <div className="text-right flex flex-col items-end">
-                            <span className="text-3xl font-display font-bold text-coral-500 italic drop-shadow-[0_0_10px_rgba(224,92,58,0.3)] tracking-tighter">2027</span>
-                            <span className="text-[9px] text-text-500 font-mono uppercase font-bold tracking-[0.2em]">Target Re-Survey</span>
-                        </div>
-                    </div>
-
-                    <div className="relative mb-12 px-6">
-                        <div className="h-0.5 bg-ocean-800 absolute top-[10px] left-0 right-0 pointer-events-none opacity-30"></div>
-                        <div className="flex justify-between items-center relative">
-                            <div className="flex flex-col items-center">
-                                <div className="w-5 h-5 rounded-full bg-ocean-700 border-4 border-ocean-900 z-10"></div>
-                                <span className="text-[10px] font-mono mt-2 text-text-500 italic">2011 Epoch</span>
-                            </div>
-                            <div className="flex flex-col items-center">
-                                <div className="w-5 h-5 rounded-full bg-ocean-700 border-4 border-ocean-900 z-10"></div>
-                                <span className="text-[10px] font-mono mt-2 text-text-500 italic">2019 Epoch</span>
-                            </div>
-                            <div className="flex flex-col items-center">
-                                <div className="w-8 h-8 rounded-full bg-coral-500 border-4 border-ocean-950 z-10 animate-pulse shadow-[0_0_20px_rgba(224,92,58,0.5)]"></div>
-                                <span className="text-[10px] font-bold font-mono mt-2 text-coral-500 uppercase italic tracking-widest outline-coral-500/20 outline">2027 Target</span>
-                            </div>
+                        <div className="space-y-4 relative z-10 flex-1">
+                            {[
+                                { label: 'OGC API Features', status: 'Ready', color: 'text-teal-400', prog: 85 },
+                                { label: 'WMS (Web Map Service)', status: 'Active', color: 'text-teal-400', prog: 100 },
+                                { label: 'NGDI Node Integration', status: 'In Review', color: 'text-gold-500', prog: 60 },
+                                { label: 'ISO 19115:2003', status: 'Compliant', color: 'text-teal-400', prog: 90 },
+                            ].map(it => (
+                                <div key={it.label} className="space-y-1.5 focus-within:translate-x-1 transition-transform">
+                                    <div className="flex justify-between text-[11px] font-mono italic">
+                                        <span className="text-text-300 font-bold uppercase tracking-tighter">{it.label}</span>
+                                        <span className={it.color}>{it.status}</span>
+                                    </div>
+                                    <div className="h-1 bg-ocean-950 rounded-full overflow-hidden border border-ocean-700/50">
+                                        <div className={`h-full ${it.color.replace('text', 'bg')} transition-all duration-1000 ease-out`} style={{ width: `${it.prog}%` }}></div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
 
-                    <div className="bg-ocean-950/50 p-5 rounded-2xl border border-coral-500/20 shadow-inner relative overflow-hidden group">
-                        <div className="flex items-start space-x-4 relative z-10">
-                            <TrendingDown size={20} className="text-coral-500 mt-1 shrink-0" />
-                            <div>
-                                <h4 className="text-xs font-bold text-text-100 uppercase italic tracking-tighter mb-2 underline decoration-coral-500/20">Decay Projection Analysis</h4>
-                                <p className="text-[11px] text-text-300 leading-relaxed italic opacity-95">
-                                    "At current decay rate, <span className="text-coral-500 font-bold">A_2011 TRI hits critical threshold (&lt;25) in 2028</span>.
-                                    C_2011 follows in 2029. A 2027 survey would reset both to approximately <span className="text-teal-400 font-bold">72/100</span>,
-                                    maintaining regulatory governance across both sites."
-                                </p>
+                    <div className="glass-card p-6 border-teal-500/20 shadow-2xl">
+                        <h3 className="text-sm font-bold uppercase tracking-widest italic flex items-center text-teal-400 mb-6">
+                            <Layers size={16} className="mr-2" />
+                            Interoperability Extensions
+                        </h3>
+                        <div className="grid grid-cols-2 gap-3">
+                            <InteropBadge label="Google Earth Engine" status="COMPATIBLE" icon={Globe} />
+                            <InteropBadge label="ISRO Bhuvan" status="COMPATIBLE" icon={Cpu} />
+                            <InteropBadge label="ESRI ArcGIS" status="CONNECTED" icon={Server} />
+                            <InteropBadge label="QGIS Cloud" status="SUPPORTED" icon={ExternalLink} />
+                        </div>
+                        <div className="mt-6 p-4 bg-teal-500/10 rounded-xl border border-teal-500/20">
+                            <div className="flex items-center space-x-2 text-[10px] font-bold text-teal-400 mb-2">
+                                <Info size={12} />
+                                <span>ISO 19115 READY</span>
                             </div>
+                            <p className="text-[10px] text-text-400 italic leading-snug">
+                                All metadata records are serialised into ISO-compliant XML/JSON for seamless federation with national geospatial portals.
+                            </p>
                         </div>
                     </div>
                 </div>
-            </div >
-        </div >
+
+                <div className="lg:col-span-8 flex flex-col space-y-8">
+                     {/* Lifecycle */}
+                    <div className="glass-card p-8 bg-coral-500/5 border-coral-500/20 flex flex-col items-stretch">
+                        <div className="flex justify-between items-end mb-10">
+                            <div>
+                                <h3 className="text-sm font-bold uppercase tracking-[0.2em] italic flex items-center text-coral-500 drop-shadow-sm">
+                                    <Calendar size={18} className="mr-2" />
+                                    Critical Survey Lifecycle
+                                </h3>
+                                <p className="text-[10px] text-text-500 font-mono italic uppercase mt-1">Countdown to Regulatory Sunset</p>
+                            </div>
+                            <div className="text-right flex flex-col items-end">
+                                <span className="text-3xl font-display font-bold text-coral-500 italic drop-shadow-[0_0_10px_rgba(224,92,58,0.3)] tracking-tighter">2027</span>
+                                <span className="text-[9px] text-text-500 font-mono uppercase font-bold tracking-[0.2em]">Target Re-Survey</span>
+                            </div>
+                        </div>
+
+                        <div className="relative mb-12 px-6">
+                            <div className="h-0.5 bg-ocean-800 absolute top-[10px] left-0 right-0 pointer-events-none opacity-30"></div>
+                            <div className="flex justify-between items-center relative">
+                                <div className="flex flex-col items-center">
+                                    <div className="w-5 h-5 rounded-full bg-ocean-700 border-4 border-ocean-900 z-10"></div>
+                                    <span className="text-[10px] font-mono mt-2 text-text-500 italic">2011 Epoch</span>
+                                </div>
+                                <div className="flex flex-col items-center">
+                                    <div className="w-5 h-5 rounded-full bg-ocean-700 border-4 border-ocean-900 z-10"></div>
+                                    <span className="text-[10px] font-mono mt-2 text-text-500 italic">2019 Epoch</span>
+                                </div>
+                                <div className="flex flex-col items-center">
+                                    <div className="w-8 h-8 rounded-full bg-coral-500 border-4 border-ocean-950 z-10 animate-pulse shadow-[0_0_20px_rgba(224,92,58,0.5)]"></div>
+                                    <span className="text-[10px] font-bold font-mono mt-2 text-coral-500 uppercase italic tracking-widest outline-coral-500/20 outline">2027 Target</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-ocean-950/50 p-5 rounded-2xl border border-coral-500/20 shadow-inner relative overflow-hidden group">
+                            <div className="flex items-start space-x-4 relative z-10">
+                                <TrendingDown size={20} className="text-coral-500 mt-1 shrink-0" />
+                                <div>
+                                    <h4 className="text-xs font-bold text-text-100 uppercase italic tracking-tighter mb-2 underline decoration-coral-500/20">Decay Projection Analysis</h4>
+                                    <p className="text-[11px] text-text-300 leading-relaxed italic opacity-95">
+                                        "At current decay rate, <span className="text-coral-500 font-bold">A_2011 TRI hits critical threshold (&lt;25) in 2028</span>.
+                                        C_2011 follows in 2029. A 2027 survey would reset both."
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Best Practices */}
+                    <div className="space-y-6">
+                        <h3 className="text-sm mb-2 font-display italic uppercase tracking-widest flex items-center space-x-2 px-2">
+                            <ClipboardList size={18} className="text-teal-400" />
+                            <span>Algorithmic Recommendations</span>
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {bestPractices.slice(0, 4).map(bp => (
+                                <div key={bp.id} className="glass-card p-4 border-l-2 border-teal-500/20 hover:border-teal-400 transition-all flex flex-col group">
+                                    <span className="text-[9px] text-teal-500 font-mono mb-1 uppercase font-bold italic">Rule #{bp.id}</span>
+                                    <h4 className="text-xs font-bold text-text-100 mb-2 group-hover:text-teal-400 transition-colors uppercase font-display leading-tight">{bp.rec}</h4>
+                                    <div className="bg-ocean-950/50 p-2 rounded border border-ocean-700/50 flex items-start space-x-2">
+                                        <Info size={10} className="text-text-500 mt-0.5 shrink-0" />
+                                        <p className="text-[9px] text-text-400 leading-tight italic inline line-clamp-1">Triggered by: {bp.trigger}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }

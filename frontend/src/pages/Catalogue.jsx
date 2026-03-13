@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCoast } from '../CoastContext';
-import { Search, Database, AlertTriangle, Info, X } from 'lucide-react';
+import { Search, Database, AlertTriangle, Info, X, Zap, Activity } from 'lucide-react';
 import TideVaultLogo from '../assets/TideVaultLogo';
 
 const LoadingScreen = ({ message }) => (
@@ -31,10 +31,13 @@ const LoadingScreen = ({ message }) => (
     </div>
 );
 
-const DatasetCard = ({ dataset, onSelect }) => {
+const DatasetCard = ({ dataset, onSelect, mlData }) => {
     const score = dataset.quality_score;
     const color = score > 75 ? 'bg-green-500' : score > 60 ? 'bg-yellow-500' : 'bg-red-500';
     const textColor = score > 75 ? 'text-green-400' : score > 60 ? 'text-yellow-400' : 'text-red-400';
+
+    const anomalies = mlData?.filter(a => a.dataset === dataset.id && a.status === 'ANOMALY') || [];
+    const normalCount = (mlData?.filter(a => a.dataset === dataset.id && a.status === 'NORMAL') || []).length;
 
     return (
         <div
@@ -52,10 +55,35 @@ const DatasetCard = ({ dataset, onSelect }) => {
             <h3 className="text-sm font-bold text-text-100 mb-1 group-hover:text-teal-400 transition-colors">{dataset.id}</h3>
             <p className="text-[10px] text-text-500 font-mono italic mb-4 uppercase tracking-tighter">{dataset.site}</p>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
                 <div className="h-1 bg-ocean-900 rounded-full overflow-hidden">
                     <div className={`h-full ${color} shadow-[0_0_8px_rgba(45,212,191,0.3)]`} style={{ width: `${score}%` }}></div>
                 </div>
+
+                {/* ML Analysis Section */}
+                <div className="pt-2 border-t border-ocean-800/50">
+                    <div className="text-[8px] font-bold text-text-500 uppercase tracking-widest mb-2 flex items-center">
+                        <Activity size={10} className="mr-1 text-teal-500" />
+                        ML Analysis
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        {anomalies.length > 0 ? (
+                            anomalies.map((a, i) => (
+                                <div key={i} className="flex flex-col bg-coral-500/10 border border-coral-500/30 rounded px-2 py-1 w-full">
+                                    <span className="text-[8px] font-bold text-coral-500 uppercase tracking-tighter">🔴 ML ANOMALY</span>
+                                    <span className="text-[8px] font-mono text-text-300">OID: {a.oid} • {a.length.toFixed(1)}m</span>
+                                    <span className="text-[7px] font-mono text-coral-400/70">{a.confidence}% Confidence</span>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="flex items-center w-full bg-teal-500/10 border border-teal-500/30 rounded px-2 py-1">
+                                <span className="text-[8px] font-bold text-teal-400 uppercase tracking-tighter">🟢 ML NORMAL</span>
+                                <span className="text-[8px] font-mono text-text-400 ml-2">{normalCount} segments</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
                 <div className="flex justify-between items-center text-[9px] font-mono text-text-500">
                     <span className="uppercase italic">{dataset.feature_count} Features</span>
                     <span className="font-bold">EPSG:{dataset.epsg}</span>
@@ -69,6 +97,34 @@ export default function Catalogue() {
     const { datasets, loading } = useCoast();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedDataset, setSelectedDataset] = useState(null);
+    const [mlData, setMlData] = useState(null);
+    const [params, setParams] = useState(null);
+    const [paramsLoading, setParamsLoading] = useState(false);
+
+    useEffect(() => {
+        fetch('http://localhost:8000/api/ml/anomalies')
+            .then(res => res.json())
+            .then(data => setMlData(data))
+            .catch(err => console.error("ML API Fail:", err));
+    }, []);
+
+    useEffect(() => {
+        if (selectedDataset) {
+            setParamsLoading(true);
+            fetch(`http://localhost:8000/api/parameters/${selectedDataset.id}`)
+                .then(res => res.json())
+                .then(data => {
+                    setParams(data);
+                    setParamsLoading(false);
+                })
+                .catch(err => {
+                    console.error("Params API Fail:", err);
+                    setParamsLoading(false);
+                });
+        } else {
+            setParams(null);
+        }
+    }, [selectedDataset]);
 
     const filtered = datasets.filter(d =>
         d.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -76,7 +132,7 @@ export default function Catalogue() {
     );
 
     if (loading) {
-        return <LoadingScreen message="TideVault — Initialising..." />;
+        return <LoadingScreen message="TideVault — Initialising Catalogues..." />;
     }
 
     return (
@@ -93,19 +149,12 @@ export default function Catalogue() {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <div className="flex items-center space-x-4">
-                    {['All', 'LineString', 'Polygon'].map(type => (
-                        <button key={type} className="px-4 py-1.5 rounded-full border border-ocean-700 text-[10px] font-mono uppercase italic text-text-500 hover:border-teal-500/50 hover:text-teal-400 transition-all">
-                            {type}
-                        </button>
-                    ))}
-                </div>
             </div>
 
             {/* Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filtered.map(d => (
-                    <DatasetCard key={d.id} dataset={d} onSelect={setSelectedDataset} />
+                    <DatasetCard key={d.id} dataset={d} onSelect={setSelectedDataset} mlData={mlData} />
                 ))}
             </div>
 
@@ -129,19 +178,40 @@ export default function Catalogue() {
                         </div>
 
                         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-10">
-                            {/* Stats Bar */}
-                            <div className="grid grid-cols-4 gap-4">
-                                {[
-                                    { label: 'Quality', val: selectedDataset.quality_score + '%' },
-                                    { label: 'Features', val: selectedDataset.feature_count },
-                                    { label: 'EPSG', val: selectedDataset.epsg },
-                                    { label: 'Fields', val: selectedDataset.fields.length }
-                                ].map(s => (
-                                    <div key={s.label} className="bg-ocean-900/50 p-3 rounded-xl border border-ocean-800 text-center">
-                                        <div className="text-[9px] text-text-500 uppercase font-mono mb-1">{s.label}</div>
-                                        <div className="text-sm font-bold text-text-100">{s.val}</div>
+                            {/* Spatial Parameters Section */}
+                            <div className="space-y-4">
+                                <h4 className="text-xs font-bold uppercase tracking-wider text-teal-500 flex items-center">
+                                    <Zap size={14} className="mr-2" />
+                                    Spatial Parameters (Live Engine)
+                                </h4>
+                                {paramsLoading ? (
+                                    <div className="h-20 flex items-center justify-center border border-ocean-800 rounded-xl bg-ocean-900/20 animate-pulse">
+                                        <span className="text-[10px] font-mono text-text-500">COMPUTING PARAMETERS...</span>
                                     </div>
-                                ))}
+                                ) : params ? (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="glass-card p-4 border-ocean-800 bg-ocean-900/30">
+                                            <table className="w-full text-[10px] font-mono">
+                                                <tbody>
+                                                    <tr className="border-b border-ocean-800/50"><td className="py-2 text-text-500">Total HTL Length</td><td className="py-2 text-right text-text-100">{params.total_htl_length.toLocaleString()}m</td></tr>
+                                                    <tr className="border-b border-ocean-800/50"><td className="py-2 text-text-500">Mean Segment</td><td className="py-2 text-right text-text-100">{params.mean_length.toFixed(2)}m</td></tr>
+                                                    <tr className="border-b border-ocean-800/50"><td className="py-2 text-text-500">Max Segment</td><td className="py-2 text-right text-text-100">{params.max_length.toFixed(2)}m <span className="text-teal-500">(OID:{params.max_oid})</span></td></tr>
+                                                    <tr className=""><td className="py-2 text-text-500">Min Segment</td><td className="py-2 text-right text-text-100">{params.min_length.toFixed(2)}m <span className="text-teal-500">(OID:{params.min_oid})</span></td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div className="glass-card p-4 border-ocean-800 bg-ocean-900/30">
+                                            <table className="w-full text-[10px] font-mono">
+                                                <tbody>
+                                                    <tr className="border-b border-ocean-800/50"><td className="py-2 text-text-500">Std Deviation</td><td className="py-2 text-right text-text-100">{params.std_dev.toFixed(2)}</td></tr>
+                                                    <tr className="border-b border-ocean-800/50"><td className="py-2 text-text-500">Survey Area</td><td className="py-2 text-right text-text-100">{params.area_sqkm.toFixed(4)} sq.km</td></tr>
+                                                    <tr className="border-b border-ocean-800/50"><td className="py-2 text-text-500">Feature Types</td><td className="py-2 text-right text-text-100">{Object.keys(params.feature_counts).length} types</td></tr>
+                                                    <tr className=""><td className="py-2 text-text-500">Bounding Box</td><td className="py-2 text-right text-text-100 text-[8px] leading-tight">WGS84 Ready</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                ) : null}
                             </div>
 
                             {/* Data Audit Feed */}

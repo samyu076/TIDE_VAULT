@@ -8,3 +8,4 @@ pandas
 pydantic
 python-multipart
 jinja2
+scikit-learn

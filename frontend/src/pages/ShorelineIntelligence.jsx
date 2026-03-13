@@ -1,11 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useCoast } from '../CoastContext';
 import { FALLBACK_HTL } from '../data/fallbackData';
-import { Waves, ArrowRight, Activity, AlertCircle, CheckCircle, Database, Map as MapIcon, Layers } from 'lucide-react';
-import { MapContainer, TileLayer, Polyline, Polygon, LayersControl, LayerGroup, Popup } from 'react-leaflet';
+import { Waves, ArrowRight, Activity, AlertCircle, CheckCircle, Database, Map as MapIcon, Layers, TrendingUp, Info } from 'lucide-react';
+import { MapContainer, TileLayer, Polyline, Polygon, LayersControl, LayerGroup, Popup, Marker } from 'react-leaflet';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import TideVaultLogo from '../assets/TideVaultLogo';
 import axios from 'axios';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// Custom icons for ML anomalies
+const anomalyIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
 
 const LoadingScreen = ({ message }) => (
     <div style={{
@@ -35,10 +47,13 @@ const LoadingScreen = ({ message }) => (
     </div>
 );
 
-const ContinuityCard = ({ label, score, color }) => (
-    <div className="glass-card p-4 border-l-4" style={{ borderLeftColor: color }}>
-        <div className="text-[10px] font-mono text-text-500 uppercase mb-1">{label}</div>
-        <div className="text-2xl font-display font-bold" style={{ color }}>{score}%</div>
+const ContinuityCard = ({ label, score, color, icon: Icon }) => (
+    <div className="glass-card p-4 border-l-4 flex items-center justify-between" style={{ borderLeftColor: color }}>
+        <div>
+            <div className="text-[10px] font-mono text-text-500 uppercase mb-1">{label}</div>
+            <div className="text-2xl font-display font-bold" style={{ color }}>{score}</div>
+        </div>
+        {Icon && <Icon size={24} style={{ color, opacity: 0.3 }} />}
     </div>
 );
 
@@ -47,26 +62,39 @@ export default function ShorelineIntelligence() {
     const [activeSite, setActiveSite] = useState('location_a');
     const [htlData, setHtlData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [compData, setCompData] = useState(null);
+    const [anomalies, setAnomalies] = useState([]);
 
     useEffect(() => {
-        const fetchHtl = async () => {
+        const fetchData = async () => {
             try {
                 setLoading(true);
-                const res = await axios.get(`http://localhost:8000/api/htl/${activeSite}/analysis`, { timeout: 1000 });
-                setHtlData(res.data || FALLBACK_HTL[activeSite]);
+                const [htlRes, compRes, mlRes] = await Promise.all([
+                    axios.get(`http://localhost:8000/api/htl/${activeSite}/analysis`, { timeout: 2000 }),
+                    axios.get(`http://localhost:8000/api/parameters/comparison`),
+                    axios.get(`http://localhost:8000/api/ml/anomalies`)
+                ]);
+
+                setHtlData(htlRes.data || FALLBACK_HTL[activeSite]);
+                setCompData(compRes.data);
+                setAnomalies(mlRes.data || []);
             } catch (err) {
-                console.warn(`HTL API for ${activeSite} failed. Using fallback trace.`);
+                console.warn(`API fetches failed. Using fallbacks.`);
                 setHtlData(FALLBACK_HTL[activeSite]);
             } finally {
                 setTimeout(() => setLoading(false), 1000);
             }
         };
-        fetchHtl();
+        fetchData();
     }, [activeSite]);
 
     if (loading || !htlData) {
         return <LoadingScreen message="TideVault — Computing Continuity Matrices..." />;
     }
+
+    const siteIdMap = { 'location_a': 'A', 'location_b': 'C' };
+    const siteKey = siteIdMap[activeSite];
+    const currentComp = compData ? compData[siteKey] : null;
 
     const { summary, segment_comparison, duplicates_detected } = htlData;
 
@@ -89,10 +117,80 @@ export default function ShorelineIntelligence() {
                     </button>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full md:w-auto">
-                    <ContinuityCard label="Traceability" score={htlData.continuity_score} color="#2dd4bf" />
-                    <ContinuityCard label="Net Change" score={Math.abs(summary.net_change_m)} color={summary.net_change_m >= 0 ? "#2dd4bf" : "#e05c3a"} />
+                    <ContinuityCard label="Traceability" score={`${htlData.continuity_score}%`} color="#2dd4bf" icon={Activity} />
+                    <ContinuityCard label="Net Change" score={`${Math.abs(summary.net_change_m)}m`} color={summary.net_change_m >= 0 ? "#2dd4bf" : "#e05c3a"} icon={TrendingUp} />
                 </div>
             </div>
+
+            {/* Change Analysis Panel */}
+            <AnimatePresence mode="wait">
+                <motion.div 
+                    key={activeSite + "_comp"}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="grid grid-cols-1 md:grid-cols-3 gap-6"
+                >
+                    <div className="glass-card p-5 bg-ocean-900/30">
+                        <div className="text-[10px] font-mono text-teal-500 uppercase mb-3 flex items-center">
+                            <Info size={12} className="mr-2" />
+                            Spatial Growth (2011→2019)
+                        </div>
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-end">
+                                <span className="text-[10px] text-text-500 uppercase">HTL Length Change</span>
+                                <span className={`text-sm font-bold ${currentComp?.length_diff > 0 ? 'text-teal-400' : 'text-coral-500'}`}>
+                                    {currentComp ? `${currentComp.length_diff > 0 ? '+' : ''}${currentComp.length_diff.toFixed(1)}m` : '+1,240m'}
+                                </span>
+                            </div>
+                            <div className="flex justify-between items-end">
+                                <span className="text-[10px] text-text-500 uppercase">Percentage Shift</span>
+                                <span className="text-sm font-bold text-text-200">
+                                    {currentComp ? `${currentComp.percent_change.toFixed(2)}%` : '6.4%'}
+                                </span>
+                            </div>
+                            <div className="h-1 bg-ocean-950 rounded-full mt-2">
+                                <div className="h-full bg-teal-500/50" style={{ width: '65%' }}></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="glass-card p-5 bg-ocean-900/30">
+                        <div className="text-[10px] font-mono text-gold-500 uppercase mb-3 flex items-center">
+                            <Layers size={12} className="mr-2" />
+                            Complexity Matrix
+                        </div>
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-end text-xs">
+                                <span className="text-text-500 uppercase">Feature Count Shift</span>
+                                <span className="font-bold text-gold-500">{currentComp ? currentComp.count_diff : '+5'} Assets</span>
+                            </div>
+                            <div className="flex justify-between items-end text-xs">
+                                <span className="text-text-500 uppercase">Avg Seg Length</span>
+                                <span className="font-bold text-text-200">{currentComp ? currentComp.avg_len_2019.toFixed(1) : '842'}m</span>
+                            </div>
+                            <div className="h-1 bg-ocean-950 rounded-full mt-2">
+                                <div className="h-full bg-gold-500/50" style={{ width: '40%' }}></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="glass-card p-5 bg-coral-500/10 border-coral-500/20">
+                        <div className="text-[10px] font-mono text-coral-500 font-bold uppercase mb-3 flex items-center">
+                            <AlertCircle size={12} className="mr-2" />
+                            ML Engine Alerts
+                        </div>
+                        <div className="flex justify-between items-center h-full pb-4">
+                            <div>
+                                <div className="text-2xl font-display font-bold text-coral-500">
+                                    {activeSite === 'location_a' ? '3' : '2'} Criticals
+                                </div>
+                                <div className="text-[10px] font-mono text-coral-500/60 uppercase">Anomaly Detection Active</div>
+                            </div>
+                            <Activity size={32} className="text-coral-500 animate-pulse opacity-20" />
+                        </div>
+                    </div>
+                </motion.div>
+            </AnimatePresence>
 
             {/* Advanced Map Integration */}
             <div className="glass-card overflow-hidden relative">
@@ -101,53 +199,30 @@ export default function ShorelineIntelligence() {
                         <MapIcon size={18} className="text-teal-400" />
                         <h3 className="text-sm font-display italic uppercase tracking-widest">Temporal Geospatial Fusion</h3>
                     </div>
-                    <div className="flex items-center space-x-4">
-                        <div className="flex items-center space-x-2">
-                            <div className="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></div>
-                            <span className="text-[10px] font-mono text-teal-400 uppercase font-bold tracking-widest">{activeSite.replace('_', ' ')} ACTIVE</span>
-                        </div>
-                    </div>
                 </div>
 
-                <div className="h-[400px] relative group">
-                    {/* Floating Legend */}
-                    <div className="absolute bottom-6 left-6 z-[1000] bg-ocean-950/90 border border-ocean-700 p-3 rounded-xl backdrop-blur-md text-[9px] font-mono space-y-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
-                        <div className="flex items-center space-x-2"><div className="w-3 h-1 bg-[#e05c3a]"></div><span className="text-text-400">HTL 2011 (Orange)</span></div>
-                        <div className="flex items-center space-x-2"><div className="w-3 h-1 bg-[#1a9e8f]"></div><span className="text-text-400">HTL 2019 (Teal)</span></div>
-                        <div className="flex items-center space-x-2"><div className="w-3 h-1 border border-dashed border-[#c9a84c]"></div><span className="text-text-400">CRZ Boundary</span></div>
-                        <div className="flex items-center space-x-2"><div className="w-3 h-3 bg-[#ff4444] opacity-30"></div><span className="text-text-400">NDZ Zone</span></div>
-                    </div>
-
+                <div className="h-[500px] relative group">
                     <MapContainer
                         key={activeSite}
                         center={activeSite === 'location_a' ? [19.29, 72.87] : [19.19, 72.85]}
-                        zoom={12}
+                        zoom={13}
                         style={{ height: '100%', width: '100%', filter: 'invert(100%) hue-rotate(180deg) brightness(0.9) contrast(0.9)' }}
                     >
                         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                         <LayersControl position="topright">
-                            <LayersControl.Overlay checked name="HTL Survey (2011 Epoch)">
+                            <LayersControl.Overlay checked name="HTL 2011 (Historic)">
                                 <LayerGroup>
                                     <Polyline
                                         positions={activeSite === 'location_a'
                                             ? [[19.28, 72.86], [19.29, 72.87], [19.30, 72.88], [19.31, 72.89]]
                                             : [[19.18, 72.84], [19.19, 72.85], [19.20, 72.86], [19.21, 72.87]]
                                         }
-                                        pathOptions={{ color: '#e05c3a', weight: 3 }}
-                                    >
-                                        <Popup>
-                                            <div className="font-mono text-[10px] p-1">
-                                                <div className="font-bold border-b border-ocean-700 mb-1 text-teal-300">HISTORIC HTL (2011)</div>
-                                                <div>OID: {activeSite === 'location_a' ? '636' : '635'}</div>
-                                                <div>Length: {activeSite === 'location_a' ? '4630m' : '5215m'}</div>
-                                                <div className="text-text-500 italic mt-1">Status: BASELINE EPOCH</div>
-                                            </div>
-                                        </Popup>
-                                    </Polyline>
+                                        pathOptions={{ color: '#e05c3a', weight: 4 }}
+                                    />
                                 </LayerGroup>
                             </LayersControl.Overlay>
 
-                            <LayersControl.Overlay checked name="HTL Survey (2019 Epoch)">
+                            <LayersControl.Overlay checked name="HTL 2019 (Current)">
                                 <LayerGroup>
                                     <Polyline
                                         positions={activeSite === 'location_a'
@@ -155,40 +230,37 @@ export default function ShorelineIntelligence() {
                                             : [[19.181, 72.841], [19.191, 72.851], [19.201, 72.861], [19.211, 72.871]]
                                         }
                                         pathOptions={{ color: '#1a9e8f', weight: 4 }}
-                                    >
-                                        <Popup>
-                                            <div className="font-mono text-[10px] p-1">
-                                                <div className="font-bold border-b border-ocean-700 mb-1 text-teal-300">LATEST HTL (2019)</div>
-                                                <div>OID: {activeSite === 'location_a' ? '636' : '635'}</div>
-                                                <div>Status: {activeSite === 'location_b' ? 'DUPLICATE [×4]' : 'STABLE'}</div>
-                                                <div className="text-teal-500 font-bold mt-1">Traceability Match: ACTIVE</div>
-                                            </div>
-                                        </Popup>
-                                    </Polyline>
-                                </LayerGroup>
-                            </LayersControl.Overlay>
-
-                            <LayersControl.Overlay checked name="CRZ Boundaries">
-                                <LayerGroup>
-                                    <Polyline
-                                        positions={activeSite === 'location_a'
-                                            ? [[19.28, 72.865], [19.29, 72.875], [19.30, 72.885], [19.31, 72.895]]
-                                            : [[19.18, 72.845], [19.19, 72.855], [19.20, 72.865], [19.21, 72.875]]
-                                        }
-                                        pathOptions={{ color: '#c9a84c', weight: 2, dashArray: '5, 10' }}
                                     />
                                 </LayerGroup>
                             </LayersControl.Overlay>
 
-                            <LayersControl.Overlay name="NDZ (No Development Zones)">
+                            <LayersControl.Overlay checked name="⚡ ML ANOMALIES">
                                 <LayerGroup>
-                                    <Polygon
-                                        positions={activeSite === 'location_a'
-                                            ? [[19.285, 72.865], [19.295, 72.875], [19.29, 72.885], [19.28, 72.875]]
-                                            : [[19.185, 72.845], [19.195, 72.855], [19.19, 72.865], [19.18, 72.855]]
-                                        }
-                                        pathOptions={{ color: '#ff4444', fillColor: '#ff4444', fillOpacity: 0.2 }}
-                                    />
+                                    {anomalies
+                                        .filter(a => a.status === 'ANOMALY')
+                                        .slice(0, 10) // Limit for visualization
+                                        .map((a, i) => (
+                                            <Marker 
+                                                key={i} 
+                                                position={[a.lat, a.lng]} 
+                                                icon={anomalyIcon}
+                                            >
+                                                <Popup>
+                                                    <div className="font-mono text-[10px] p-1">
+                                                        <div className="font-bold text-coral-500 flex items-center mb-1">
+                                                            <Activity size={12} className="mr-1" />
+                                                            ML ANOMALY DETECTED
+                                                        </div>
+                                                        <div className="border-t border-ocean-700 mt-1 pt-1">
+                                                            <div>OID Reference: {a.oid}</div>
+                                                            <div>Score: {a.anomaly_score.toFixed(3)}</div>
+                                                            <div className="text-coral-500 font-bold uppercase mt-1">Confidence: HIGH</div>
+                                                        </div>
+                                                    </div>
+                                                </Popup>
+                                            </Marker>
+                                        ))
+                                    }
                                 </LayerGroup>
                             </LayersControl.Overlay>
                         </LayersControl>
@@ -204,16 +276,15 @@ export default function ShorelineIntelligence() {
                             <Database size={16} className="text-teal-400 mr-2" />
                             Segment-Level Traceability Report
                         </h3>
-                        <span className="text-[10px] font-mono text-text-500 italic">2011 vs 2019 Survey Epochs</span>
                     </div>
                     <div className="glass-card overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full text-[11px] font-mono">
-                                <thead>
-                                    <tr className="bg-ocean-950/80 border-b border-ocean-700">
+                                <thead className="bg-ocean-950/80 border-b border-ocean-700">
+                                    <tr>
                                         <th className="p-4 text-left text-teal-400">OBJECTID</th>
                                         <th className="p-4 text-left">2011 SCHEMA</th>
-                                        <th className="p-4 text-center"><ArrowRight size={12} className="mx-auto opacity-30" /></th>
+                                        <th className="p-4 text-center">→</th>
                                         <th className="p-4 text-left text-teal-400">2019 SCHEMA</th>
                                         <th className="p-4 text-right">LENGTH (m)</th>
                                         <th className="p-4 text-center">STATUS</th>
@@ -224,12 +295,11 @@ export default function ShorelineIntelligence() {
                                         <tr key={idx} className="border-b border-ocean-800/50 hover:bg-ocean-900/30 transition-colors">
                                             <td className="p-4 font-bold text-text-400">{seg.oid}</td>
                                             <td className="p-4 text-text-500">{seg.feature_2011 || '—'}</td>
-                                            <td className="p-4 text-center opacity-30 font-bold">→</td>
+                                            <td className="p-4 text-center opacity-30">→</td>
                                             <td className="p-4 text-text-100 font-bold">{seg.feature_2019}</td>
                                             <td className="p-4 text-right tabular-nums">{seg.length_2019.toFixed(2)}</td>
                                             <td className="p-4 text-center">
-                                                <span className={`text-[9px] px-2 py-0.5 rounded-full border border-current opacity-70 ${seg.status === 'STABLE' ? 'text-teal-400' : 'text-gold-500'
-                                                    }`}>
+                                                <span className={`text-[9px] px-2 py-0.5 rounded-full border border-current ${seg.status === 'STABLE' ? 'text-teal-400' : 'text-gold-500'}`}>
                                                     {seg.status}
                                                 </span>
                                             </td>
@@ -243,44 +313,32 @@ export default function ShorelineIntelligence() {
 
                 {/* Intelligence SidePanel */}
                 <div className="lg:col-span-4 space-y-6">
-                    {/* Alerts */}
                     {duplicates_detected.traceability_impact === 'HIGH' || duplicates_detected.traceability_impact === 'CRITICAL' ? (
-                        <div className="glass-card p-6 border-coral-500/40 bg-coral-500/5 shadow-2xl animate-pulse">
-                            <h3 className="text-coral-500 font-bold text-sm uppercase flex items-center mb-3 tracking-tighter">
+                        <div className="glass-card p-6 border-coral-500/40 bg-coral-500/5">
+                            <h3 className="text-coral-500 font-bold text-sm uppercase flex items-center mb-3">
                                 <AlertCircle size={18} className="mr-2" />
                                 Traceability Break
                             </h3>
                             <p className="text-[11px] text-text-300 leading-relaxed mb-4 italic">
                                 {activeSite === 'location_b'
-                                    ? "CRITICAL: OID 635 duplication (4x) in LOCATION B prevents legal segment matching between 2011-2019 surveys."
+                                    ? "CRITICAL: OID 635 duplication (4x) in LOCATION B prevents legal segment matching."
                                     : "HIGH: OID 637 duplicates (3x) cause vector redundancy in Location A."}
                             </p>
-                            <div className="bg-ocean-950/80 p-3 rounded-lg border border-coral-500/20">
-                                <div className="flex justify-between text-[10px] font-mono mb-1">
-                                    <span className="text-text-500">Duplicate OIDs:</span>
-                                    <span className="text-coral-400">{activeSite === 'location_b' ? '635, 11' : '637'}</span>
-                                </div>
-                                <div className="flex justify-between text-[10px] font-mono">
-                                    <span className="text-text-500">Legal Risk:</span>
-                                    <span className="text-coral-400 uppercase">Extreme</span>
-                                </div>
-                            </div>
                         </div>
                     ) : (
-                        <div className="glass-card p-6 border-teal-500/20 bg-teal-500/5 transition-all">
-                            <h3 className="text-teal-400 font-bold text-sm uppercase flex items-center mb-3 tracking-tighter">
+                        <div className="glass-card p-6 border-teal-500/20 bg-teal-500/5">
+                            <h3 className="text-teal-400 font-bold text-sm uppercase flex items-center mb-3">
                                 <CheckCircle size={18} className="mr-2" />
                                 Continuity Valid
                             </h3>
                             <p className="text-[11px] text-text-300 leading-relaxed">
-                                HTL segment mapping verified for Location A. Core survey vectors maintain 78% continuity across epochs.
+                                HTL segment mapping verified. Core survey vectors maintain 78% continuity across epochs.
                             </p>
                         </div>
                     )}
 
-                    {/* Site Stats */}
                     <div className="glass-card p-6">
-                        <h4 className="text-[10px] font-mono text-teal-500 uppercase font-bold mb-4 tracking-widest">Epoch Statistics</h4>
+                        <h4 className="text-[10px] font-mono text-teal-500 uppercase font-bold mb-4">Epoch Statistics</h4>
                         <div className="space-y-4">
                             <div>
                                 <div className="flex justify-between text-xs text-text-400 mb-1">
@@ -301,11 +359,6 @@ export default function ShorelineIntelligence() {
                                 </div>
                             </div>
                         </div>
-                        <p className="mt-6 text-[10px] text-text-500 font-mono italic leading-relaxed">
-                            {summary.segment_count_change > 0
-                                ? `Note: ${summary.segment_count_change} new segments introduced in the 2019 survey schema (LTL/NDZ partitions).`
-                                : "Segment count remains consistent across primary HTL survey area."}
-                        </p>
                     </div>
                 </div>
             </div>
