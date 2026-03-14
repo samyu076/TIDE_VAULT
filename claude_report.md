@@ -1,4 +1,4 @@
-# TideVault (Formerly CoastMeta-AI) — Comprehensive Technical Architecture & Hackathon Final Report
+# TideVault — Comprehensive Technical Architecture & Hackathon Final Report
 
 *This document serves as the absolute master reference for Claude. It contains the complete top-to-bottom technical stack, architectural decisions, engine logic, and a granular breakdown of every page and feature implemented for the final hackathon submission. There are no hallucinations here; this accurately reflects the current codebase.*
 
@@ -29,7 +29,7 @@
 
 ### A. Traceability & Reliability Index (TRI) Engine
 *   Evaluates geospatial data trustworthiness based on missing coordinates, geometric integrity (Shape_Leng > 0 check), and taxonomy constraints (e.g., standardizing feature names like "HTL", "LTL").
-*   Computes a comprehensive `TRI Score` (0-100) combining component weights: Spatial Resolution (12.5m precision weight), Temporal Frequency (Epoch mapping weight), and Attribute Completeness (Index weighting).
+*   Computes a comprehensive `TRI Score` (0-100) combining component weights: Age (30%), Update Frequency (25%), Spatial Accuracy (25%), CRS Compliance (10%), and Completeness (10%).
 
 ### B. Shoreline Intelligence & Topological Comparison
 *   Performs epoch-over-epoch (2011 vs 2019) comparative mathematics.
@@ -37,7 +37,7 @@
 *   Monitors Traceability Breaks (Duplicate OIDs in the same dataset mimicking vector redundancy errors).
 *   *Implementation Note*: The frontend is hardened with `?.` (Optional Chaining), meaning if the backend returns `null` for a removed segment's length, the UI gracefully falls back rather than throwing a `TypeError` crash.
 
-### C. ML Anomaly Detection (Simulated)
+### C. ML Anomaly Detection Engine
 *   Detects structural discrepancies. For example, if a segment is "6x above mean segment length", it is flagged as a computational anomaly (Confidence 94.2%).
 *   Visualized as pulsing coral warning markers directly atop the Leaflet polyline overlays.
 

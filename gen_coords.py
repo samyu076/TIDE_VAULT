@@ -33,13 +33,13 @@ def generate_jagged_line(start, end, segments, amplitude, rand_seed):
     points.append([round(lat2, 5), round(lng2, 5)])
     return points
 
-# Location A (Juhu side)
-a_2011 = generate_jagged_line([19.055, 72.823], [19.075, 72.826], 15, 0.0005, 42)
-a_2019 = generate_jagged_line([19.055, 72.823], [19.075, 72.826], 15, 0.0008, 43)
+# Location A (Madh Island to Malwani)
+a_2011 = generate_jagged_line([19.135, 72.795], [19.155, 72.790], 15, 0.0005, 42)
+a_2019 = generate_jagged_line([19.135, 72.795], [19.155, 72.790], 15, 0.0008, 43)
 
-# Location B (Aksa side)
-c_2011 = generate_jagged_line([19.165, 72.795], [19.185, 72.785], 15, 0.0004, 99)
-c_2019 = generate_jagged_line([19.165, 72.795], [19.185, 72.785], 15, 0.0007, 100)
+# Location B (Manori to Gorai)
+c_2011 = generate_jagged_line([19.195, 72.773], [19.220, 72.775], 15, 0.0006, 99)
+c_2019 = generate_jagged_line([19.195, 72.773], [19.220, 72.775], 15, 0.0010, 100)
 
 with open('realistic_coords.js', 'w') as f:
     f.write("export const REAL_COORDS = {\n")
@@ -48,4 +48,4 @@ with open('realistic_coords.js', 'w') as f:
     f.write(f"  C_2011: {c_2011},\n")
     f.write(f"  C_2019: {c_2019}\n")
     f.write("};\n")
-print("Done")
+print("Done remapping to Malwani/Gorai")
