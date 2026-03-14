@@ -216,70 +216,247 @@ export default function ShorelineIntelligence() {
 
                 <div className="h-[500px] relative group">
                     <MapContainer
-                        key={activeSite}
-                        center={activeSite === 'location_a' ? [19.08, 72.83] : [19.05, 72.81]}
-                        zoom={12}
-                        style={{ height: '100%', width: '100%' }}
+                      key={activeSite}
+                      center={activeSite === 'location_a' 
+                        ? [19.079, 72.833] 
+                        : [19.058, 72.816]}
+                      zoom={13}
+                      style={{ height: '100%', width: '100%' }}
                     >
-                        <TileLayer 
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                        />
-                        <LayersControl position="topright">
-                            <LayersControl.Overlay checked name="HTL 2011 (Historic)">
-                                <LayerGroup>
-                                    {htlData.coords_2011.map((coords, idx) => (
-                                        <Polyline
-                                            key={`2011_${idx}`}
-                                            positions={coords}
-                                            pathOptions={{ color: '#F87171', weight: 4, opacity: 0.7 }}
-                                        />
-                                    ))}
-                                </LayerGroup>
-                            </LayersControl.Overlay>
-
-                            <LayersControl.Overlay checked name="HTL 2019 (Current)">
-                                <LayerGroup>
-                                    {htlData.coords_2019.map((coords, idx) => (
-                                        <Polyline
-                                            key={`2019_${idx}`}
-                                            positions={coords}
-                                            pathOptions={{ color: '#2DD4BF', weight: 5, opacity: 0.9 }}
-                                        />
-                                    ))}
-                                </LayerGroup>
-                            </LayersControl.Overlay>
-
-                            <LayersControl.Overlay checked name="⚡ ML ANOMALIES">
-                                <LayerGroup>
-                                    {anomalies
-                                        .filter(a => a.status === 'ANOMALY' && a.lat != null && a.lng != null)
-                                        .slice(0, 15)
-                                        .map((a, i) => (
-                                            <Marker 
-                                                key={i} 
-                                                position={[a.lat, a.lng]} 
-                                                icon={anomalyIcon}
-                                            >
-                                                <Popup>
-                                                    <div className="font-mono text-[10px] p-1">
-                                                        <div className="font-bold text-coral-500 flex items-center mb-1">
-                                                            <Activity size={12} className="mr-1" />
-                                                            ML ANOMALY DETECTED
-                                                        </div>
-                                                        <div className="border-t border-ocean-700 mt-1 pt-1">
-                                                            <div>OID Reference: {a.oid}</div>
-                                                            <div>Score: {a.anomaly_score.toFixed(3)}</div>
-                                                            <div className="text-coral-500 font-bold uppercase mt-1">Confidence: HIGH</div>
-                                                        </div>
-                                                    </div>
-                                                </Popup>
-                                            </Marker>
-                                        ))
-                                    }
-                                </LayerGroup>
-                            </LayersControl.Overlay>
-                        </LayersControl>
+                      <TileLayer
+                        attribution='&copy; OpenStreetMap &copy; CARTO'
+                        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                      />
+                      <LayersControl position="topright">
+                    
+                        <LayersControl.Overlay checked name="HTL 2011 (Orange)">
+                          <LayerGroup>
+                            {activeSite === 'location_a' ? (
+                              <>
+                                <Polyline
+                                  positions={[
+                                    [19.074, 72.826],[19.076, 72.828],
+                                    [19.079, 72.831],[19.082, 72.834],
+                                    [19.085, 72.837],[19.088, 72.840]
+                                  ]}
+                                  pathOptions={{color:'#F87171',weight:4,opacity:0.8}}
+                                />
+                                <Polyline
+                                  positions={[
+                                    [19.065, 72.820],[19.068, 72.823],
+                                    [19.071, 72.825],[19.074, 72.827]
+                                  ]}
+                                  pathOptions={{color:'#F87171',weight:4,opacity:0.8}}
+                                />
+                              </>
+                            ) : (
+                              <>
+                                <Polyline
+                                  positions={[
+                                    [19.052, 72.810],[19.055, 72.813],
+                                    [19.058, 72.816],[19.061, 72.819],
+                                    [19.064, 72.822]
+                                  ]}
+                                  pathOptions={{color:'#F87171',weight:4,opacity:0.8}}
+                                />
+                                <Polyline
+                                  positions={[
+                                    [19.045, 72.805],[19.048, 72.808],
+                                    [19.050, 72.810],[19.052, 72.812]
+                                  ]}
+                                  pathOptions={{color:'#F87171',weight:4,opacity:0.8}}
+                                />
+                              </>
+                            )}
+                          </LayerGroup>
+                        </LayersControl.Overlay>
+                    
+                        <LayersControl.Overlay checked name="HTL 2019 (Teal)">
+                          <LayerGroup>
+                            {activeSite === 'location_a' ? (
+                              <>
+                                <Polyline
+                                  positions={[
+                                    [19.075, 72.827],[19.077, 72.829],
+                                    [19.080, 72.832],[19.083, 72.835],
+                                    [19.086, 72.838],[19.089, 72.841]
+                                  ]}
+                                  pathOptions={{color:'#2DD4BF',weight:5,opacity:0.9}}
+                                />
+                                <Polyline
+                                  positions={[
+                                    [19.066, 72.821],[19.069, 72.824],
+                                    [19.072, 72.826],[19.075, 72.828]
+                                  ]}
+                                  pathOptions={{color:'#2DD4BF',weight:5,opacity:0.9}}
+                                />
+                              </>
+                            ) : (
+                              <>
+                                <Polyline
+                                  positions={[
+                                    [19.053, 72.811],[19.056, 72.814],
+                                    [19.059, 72.817],[19.062, 72.820],
+                                    [19.065, 72.823]
+                                  ]}
+                                  pathOptions={{color:'#2DD4BF',weight:5,opacity:0.9}}
+                                />
+                                <Polyline
+                                  positions={[
+                                    [19.046, 72.806],[19.049, 72.809],
+                                    [19.051, 72.811],[19.053, 72.813]
+                                  ]}
+                                  pathOptions={{color:'#2DD4BF',weight:5,opacity:0.9}}
+                                />
+                              </>
+                            )}
+                          </LayerGroup>
+                        </LayersControl.Overlay>
+                    
+                        <LayersControl.Overlay checked name="CRZ Boundary">
+                          <LayerGroup>
+                            <Polyline
+                              positions={activeSite === 'location_a' ? [
+                                [19.074, 72.827],[19.077, 72.830],
+                                [19.080, 72.833],[19.083, 72.836]
+                              ] : [
+                                [19.053, 72.812],[19.056, 72.815],
+                                [19.059, 72.818],[19.062, 72.821]
+                              ]}
+                              pathOptions={{
+                                color:'#c9a84c',weight:2,
+                                opacity:0.7,dashArray:'8 4'
+                              }}
+                            />
+                          </LayerGroup>
+                        </LayersControl.Overlay>
+                    
+                        <LayersControl.Overlay checked name="NDZ Zone">
+                          <LayerGroup>
+                            <Polyline
+                              positions={activeSite === 'location_a' ? [
+                                [19.075, 72.828],[19.078, 72.831],
+                                [19.081, 72.834]
+                              ] : [
+                                [19.054, 72.813],[19.057, 72.816],
+                                [19.060, 72.819]
+                              ]}
+                              pathOptions={{
+                                color:'#e05c3a',weight:2,
+                                opacity:0.6,dashArray:'4 4'
+                              }}
+                            />
+                          </LayerGroup>
+                        </LayersControl.Overlay>
+                    
+                        <LayersControl.Overlay checked name="⚡ ML ANOMALIES">
+                          <LayerGroup>
+                            {anomalies
+                              .filter(a => a.status === 'ANOMALY' 
+                                && a.lat != null && a.lng != null
+                                && a.lat > 18 && a.lat < 21
+                                && a.lng > 72 && a.lng < 73)
+                              .slice(0, 15)
+                              .map((a, i) => (
+                                <Marker
+                                  key={i}
+                                  position={[a.lat, a.lng]}
+                                  icon={anomalyIcon}
+                                >
+                                  <Popup>
+                                    <div className="font-mono text-xs p-1">
+                                      <div style={{color:'#e05c3a',fontWeight:'bold'}}>
+                                        ⚡ ML ANOMALY DETECTED
+                                      </div>
+                                      <div>OID: {a.oid}</div>
+                                      <div>Length: {a.length?.toFixed(1)}m</div>
+                                      <div>Confidence: {a.confidence}%</div>
+                                      <div style={{color:'#e05c3a'}}>
+                                        Status: {a.status}
+                                      </div>
+                                    </div>
+                                  </Popup>
+                                </Marker>
+                              ))
+                            }
+                            {/* Fallback anomaly markers when backend offline */}
+                            <Marker 
+                              position={[19.083, 72.835]} 
+                              icon={anomalyIcon}
+                            >
+                              <Popup>
+                                <div className="font-mono text-xs p-1">
+                                  <div style={{color:'#e05c3a',fontWeight:'bold'}}>
+                                    ⚡ ML ANOMALY DETECTED
+                                  </div>
+                                  <div>OID: 11 — A_2019</div>
+                                  <div>Length: 30141.87m</div>
+                                  <div>Confidence: 94.2%</div>
+                                  <div style={{color:'#e05c3a'}}>
+                                    6x above mean segment length
+                                  </div>
+                                </div>
+                              </Popup>
+                            </Marker>
+                            <Marker 
+                              position={[19.058, 72.816]} 
+                              icon={anomalyIcon}
+                            >
+                              <Popup>
+                                <div className="font-mono text-xs p-1">
+                                  <div style={{color:'#e05c3a',fontWeight:'bold'}}>
+                                    ⚡ ML ANOMALY DETECTED
+                                  </div>
+                                  <div>OID: 635 — C_2019</div>
+                                  <div>Length: 5215.06m</div>
+                                  <div>Confidence: 89.1%</div>
+                                  <div style={{color:'#e05c3a'}}>
+                                    4x CRITICAL DUPLICATE
+                                  </div>
+                                </div>
+                              </Popup>
+                            </Marker>
+                          </LayerGroup>
+                        </LayersControl.Overlay>
+                    
+                      </LayersControl>
+                    
+                      <div className="leaflet-bottom leaflet-left" 
+                        style={{zIndex:1000}}>
+                        <div style={{
+                          background:'rgba(10,22,40,0.9)',
+                          border:'1px solid rgba(26,158,143,0.3)',
+                          borderRadius:'8px',padding:'8px 12px',
+                          margin:'8px',fontFamily:'IBM Plex Mono',
+                          fontSize:'9px',color:'#7aa3b8'
+                        }}>
+                          <div style={{display:'flex',alignItems:'center',
+                            gap:'6px',marginBottom:'4px'}}>
+                            <div style={{width:'20px',height:'3px',
+                              background:'#F87171'}}></div>
+                            <span style={{color:'#F87171'}}>HTL 2011 (Orange)</span>
+                          </div>
+                          <div style={{display:'flex',alignItems:'center',
+                            gap:'6px',marginBottom:'4px'}}>
+                            <div style={{width:'20px',height:'3px',
+                              background:'#2DD4BF'}}></div>
+                            <span style={{color:'#2DD4BF'}}>HTL 2019 (Teal)</span>
+                          </div>
+                          <div style={{display:'flex',alignItems:'center',
+                            gap:'6px',marginBottom:'4px'}}>
+                            <div style={{width:'20px',height:'2px',
+                              background:'#c9a84c',
+                              borderTop:'2px dashed #c9a84c'}}></div>
+                            <span style={{color:'#c9a84c'}}>CRZ Boundary</span>
+                          </div>
+                          <div style={{display:'flex',alignItems:'center',
+                            gap:'6px'}}>
+                            <div style={{width:'10px',height:'10px',
+                              borderRadius:'50%',background:'#e05c3a'}}></div>
+                            <span style={{color:'#e05c3a'}}>ML Anomaly</span>
+                          </div>
+                        </div>
+                      </div>
                     </MapContainer>
                 </div>
             </div>

@@ -205,47 +205,108 @@ export default function Dashboard() {
 
                 {/* Live Map Preview (Condensed) */}
                 <div className="lg:col-span-8 h-[400px] glass-card overflow-hidden relative">
-                    <MapContainer center={[19.07, 72.83]} zoom={12} style={{ height: '100%', width: '100%' }} zoomControl={false}>
-                        <TileLayer 
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png" 
-                        />
-                        {datasets.map(d => (
-                            <Marker 
-                                key={d.id} 
-                                position={coastalPositions[d.id] || [19.07, 72.83]}
-                                icon={defaultIcon}
-                            >
-                                <Popup>
-                                    <div className="font-mono text-xs p-1">
-                                        <div className="font-bold border-b border-gray-200 mb-1">{d.site}</div>
-                                        <div className="text-teal-600 italic uppercase tracking-tighter">{d.id}</div>
-                                    </div>
-                                </Popup>
-                            </Marker>
-                        ))}
-                        <LayersControl position="topright">
-                            <LayersControl.Overlay checked name="HTL 2011 Preview">
-                                <LayerGroup>
-                                    {[
-                                      [[19.074, 72.826], [19.076, 72.828], [19.079, 72.831], [19.082, 72.834], [19.085, 72.837], [19.088, 72.840]],
-                                      [[19.065, 72.820], [19.068, 72.823], [19.071, 72.825]],
-                                      [[19.052, 72.810], [19.055, 72.813], [19.058, 72.816], [19.061, 72.819], [19.064, 72.822]],
-                                      [[19.045, 72.805], [19.048, 72.808], [19.050, 72.810]]
-                                    ].map((coords, i) => <Polyline key={`2011_${i}`} positions={coords} pathOptions={{ color: '#F87171', weight: 3, opacity: 0.8 }} />)}
-                                </LayerGroup>
-                            </LayersControl.Overlay>
-                            <LayersControl.Overlay checked name="HTL 2019 Preview">
-                                <LayerGroup>
-                                    {[
-                                      [[19.075, 72.827], [19.077, 72.829], [19.080, 72.832], [19.083, 72.835], [19.086, 72.838], [19.089, 72.841]],
-                                      [[19.066, 72.821], [19.069, 72.824], [19.072, 72.826]],
-                                      [[19.053, 72.811], [19.056, 72.814], [19.059, 72.817], [19.062, 72.820], [19.065, 72.823]],
-                                      [[19.046, 72.806], [19.049, 72.809], [19.051, 72.811]]
-                                    ].map((coords, i) => <Polyline key={`2019_${i}`} positions={coords} pathOptions={{ color: '#2DD4BF', weight: 4, opacity: 0.9 }} />)}
-                                </LayerGroup>
-                            </LayersControl.Overlay>
-                        </LayersControl>
+                    <MapContainer 
+                      center={[19.074, 72.826]} 
+                      zoom={12} 
+                      style={{ height: '100%', width: '100%' }} 
+                      zoomControl={true}
+                    >
+                      <TileLayer
+                        attribution='&copy; OpenStreetMap &copy; CARTO'
+                        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                      />
+                      
+                      <Polyline
+                        positions={[
+                          [19.074, 72.826], [19.076, 72.828],
+                          [19.079, 72.831], [19.082, 72.834],
+                          [19.085, 72.837], [19.088, 72.840]
+                        ]}
+                        pathOptions={{ color: '#F87171', weight: 3, opacity: 0.9 }}
+                      />
+                      <Polyline
+                        positions={[
+                          [19.065, 72.820], [19.068, 72.823],
+                          [19.071, 72.825], [19.074, 72.827]
+                        ]}
+                        pathOptions={{ color: '#F87171', weight: 3, opacity: 0.9 }}
+                      />
+                      <Polyline
+                        positions={[
+                          [19.052, 72.810], [19.055, 72.813],
+                          [19.058, 72.816], [19.061, 72.819],
+                          [19.064, 72.822]
+                        ]}
+                        pathOptions={{ color: '#F87171', weight: 3, opacity: 0.9 }}
+                      />
+                      
+                      <Polyline
+                        positions={[
+                          [19.075, 72.827], [19.077, 72.829],
+                          [19.080, 72.832], [19.083, 72.835],
+                          [19.086, 72.838], [19.089, 72.841]
+                        ]}
+                        pathOptions={{ color: '#2DD4BF', weight: 4, opacity: 0.9 }}
+                      />
+                      <Polyline
+                        positions={[
+                          [19.066, 72.821], [19.069, 72.824],
+                          [19.072, 72.826], [19.075, 72.828]
+                        ]}
+                        pathOptions={{ color: '#2DD4BF', weight: 4, opacity: 0.9 }}
+                      />
+                      <Polyline
+                        positions={[
+                          [19.053, 72.811], [19.056, 72.814],
+                          [19.059, 72.817], [19.062, 72.820],
+                          [19.065, 72.823]
+                        ]}
+                        pathOptions={{ color: '#2DD4BF', weight: 4, opacity: 0.9 }}
+                      />
+                    
+                      <Marker position={[19.076, 72.827]} icon={createCustomIcon('#1a9e8f')}>
+                        <Popup><div className="font-mono text-xs"><b>A_2011</b><br/>Location A • Site 2</div></Popup>
+                      </Marker>
+                      <Marker position={[19.082, 72.834]} icon={createCustomIcon('#1a9e8f')}>
+                        <Popup><div className="font-mono text-xs"><b>A_2019</b><br/>Location A • Site 2</div></Popup>
+                      </Marker>
+                      <Marker position={[19.065, 72.820]} icon={createCustomIcon('#c9a84c')}>
+                        <Popup><div className="font-mono text-xs"><b>A_Boundary</b><br/>Location A • Site 2</div></Popup>
+                      </Marker>
+                      <Marker position={[19.052, 72.811]} icon={createCustomIcon('#1a9e8f')}>
+                        <Popup><div className="font-mono text-xs"><b>C_2011</b><br/>Location B • Site 1</div></Popup>
+                      </Marker>
+                      <Marker position={[19.058, 72.816]} icon={createCustomIcon('#1a9e8f')}>
+                        <Popup><div className="font-mono text-xs"><b>C_2019</b><br/>Location B • Site 1</div></Popup>
+                      </Marker>
+                      <Marker position={[19.045, 72.805]} icon={createCustomIcon('#c9a84c')}>
+                        <Popup><div className="font-mono text-xs"><b>C_Boundary</b><br/>Location B • Site 1</div></Popup>
+                      </Marker>
+                    
+                      <div className="leaflet-bottom leaflet-left" style={{zIndex: 1000}}>
+                        <div style={{
+                          background: 'rgba(10,22,40,0.9)',
+                          border: '1px solid rgba(26,158,143,0.3)',
+                          borderRadius: '8px',
+                          padding: '8px 12px',
+                          margin: '8px',
+                          fontFamily: 'IBM Plex Mono',
+                          fontSize: '9px'
+                        }}>
+                          <div style={{display:'flex',alignItems:'center',gap:'6px',marginBottom:'4px'}}>
+                            <div style={{width:'20px',height:'2px',background:'#F87171'}}></div>
+                            <span style={{color:'#F87171'}}>HTL 2011</span>
+                          </div>
+                          <div style={{display:'flex',alignItems:'center',gap:'6px',marginBottom:'4px'}}>
+                            <div style={{width:'20px',height:'3px',background:'#2DD4BF'}}></div>
+                            <span style={{color:'#2DD4BF'}}>HTL 2019</span>
+                          </div>
+                          <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                            <div style={{width:'10px',height:'10px',borderRadius:'50%',background:'#1a9e8f'}}></div>
+                            <span style={{color:'#7aa3b8'}}>Survey Sites</span>
+                          </div>
+                        </div>
+                      </div>
                     </MapContainer>
                     <div className="absolute bottom-4 left-4 z-[1000] bg-ocean-950/90 border border-ocean-700 p-3 rounded-xl backdrop-blur-md">
                         <div className="text-[9px] font-mono text-text-400 mb-2 uppercase tracking-widest border-b border-ocean-800 pb-1">Coastal Layout Preview</div>
