@@ -21,7 +21,7 @@ import {
     LogOut
 } from 'lucide-react';
 
-const SidebarItem = ({ to, icon: Icon, label }) => {
+const SidebarItem = ({ to, icon: Icon, label, badge }) => {
     const location = useLocation();
     const active = location.pathname === to;
     return (
@@ -34,7 +34,14 @@ const SidebarItem = ({ to, icon: Icon, label }) => {
         >
             <Icon size={20} />
             <span className="text-xs uppercase tracking-widest">{label}</span>
-            {active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-ocean-950"></div>}
+            {badge && (
+                <div className={`ml-auto px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                    active ? 'bg-ocean-950 text-coral-500' : 'bg-coral-500/10 text-coral-500 border border-coral-500/30'
+                }`}>
+                    {badge}
+                </div>
+            )}
+            {!badge && active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-ocean-950"></div>}
         </Link>
     );
 };
@@ -84,7 +91,7 @@ export default function App() {
                         </div>
 
                         <nav className="flex-1 px-4 space-y-2 overflow-y-auto custom-scrollbar">
-                            <SidebarItem to="/" icon={LayoutDashboard} label="Dashboard" />
+                            <SidebarItem to="/" icon={LayoutDashboard} label="Dashboard" badge="18" />
                             <SidebarItem to="/catalogue" icon={Database} label="Catalogue" />
                             <SidebarItem to="/tri" icon={Zap} label="TRI Engine" />
                             <SidebarItem to="/shoreline" icon={Waves} label="Shoreline" />

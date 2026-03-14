@@ -95,11 +95,114 @@ export default function MetadataVault() {
                     </button>
                     <div className="h-8 w-px bg-ocean-800"></div>
                     <div className="flex space-x-2">
-                        {['XML', 'JSON', 'CSV'].map(ext => (
-                            <button key={ext} className="w-10 h-10 flex items-center justify-center rounded-xl border border-ocean-700 hover:border-teal-500/50 hover:bg-ocean-900 transition-all text-[10px] font-mono text-text-500 hover:text-teal-400">
-                                {ext}
-                            </button>
-                        ))}
+                      <button 
+                        onClick={() => {
+                          const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd">
+  <gmd:fileIdentifier>
+    <gco:CharacterString>${dataset?.file_id}</gco:CharacterString>
+  </gmd:fileIdentifier>
+  <gmd:language>
+    <gmd:LanguageCode codeListValue="eng">English</gmd:LanguageCode>
+  </gmd:language>
+  <gmd:dateStamp>
+    <gco:DateTime>${new Date().toISOString()}</gco:DateTime>
+  </gmd:dateStamp>
+  <gmd:identificationInfo>
+    <gmd:MD_DataIdentification>
+      <gmd:abstract>
+        <gco:CharacterString>
+          TideVault coastal dataset ${dataset?.id}. 
+          Site: ${dataset?.site}. 
+          Year: ${dataset?.year}.
+          Features: ${dataset?.feature_count}.
+          CRS: EPSG:32643.
+          Quality: ${dataset?.quality_score}/100.
+        </gco:CharacterString>
+      </gmd:abstract>
+    </gmd:MD_DataIdentification>
+  </gmd:identificationInfo>
+</gmd:MD_Metadata>`;
+                          const blob = new Blob([xml], 
+                            {type:'application/xml'});
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `${dataset?.id}_ISO19115.xml`;
+                          a.click();
+                          URL.revokeObjectURL(url);
+                        }}
+                        className="w-10 h-10 flex items-center 
+                          justify-center rounded-xl border 
+                          border-ocean-700 hover:border-teal-500/50 
+                          hover:bg-ocean-900 transition-all 
+                          text-[10px] font-mono text-text-500 
+                          hover:text-teal-400"
+                      >XML</button>
+                    
+                      <button 
+                        onClick={() => {
+                          const json = JSON.stringify({
+                            id: dataset?.id,
+                            file_id: dataset?.file_id,
+                            site: dataset?.site,
+                            year: dataset?.year,
+                            epsg: dataset?.epsg,
+                            feature_count: dataset?.feature_count,
+                            quality_score: dataset?.quality_score,
+                            fields: dataset?.fields,
+                            bbox_wgs84: dataset?.bbox_wgs84,
+                            generated: new Date().toISOString(),
+                            generated_by: "TideVault Intelligence System"
+                          }, null, 2);
+                          const blob = new Blob([json], 
+                            {type:'application/json'});
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `${dataset?.id}_metadata.json`;
+                          a.click();
+                          URL.revokeObjectURL(url);
+                        }}
+                        className="w-10 h-10 flex items-center 
+                          justify-center rounded-xl border 
+                          border-ocean-700 hover:border-teal-500/50 
+                          hover:bg-ocean-900 transition-all 
+                          text-[10px] font-mono text-text-500 
+                          hover:text-teal-400"
+                      >JSON</button>
+                    
+                      <button 
+                        onClick={() => {
+                          const csv = [
+                            "Field,Value",
+                            `Dataset ID,${dataset?.id}`,
+                            `File ID,${dataset?.file_id}`,
+                            `Site,${dataset?.site}`,
+                            `Survey Year,${dataset?.year}`,
+                            `EPSG,${dataset?.epsg}`,
+                            `Feature Count,${dataset?.feature_count}`,
+                            `Quality Score,${dataset?.quality_score}`,
+                            `Fields,"${dataset?.fields?.join(';')}"`,
+                            `Generated,${new Date().toISOString()}`,
+                            `Generated By,TideVault Intelligence System`
+                          ].join('\n');
+                          const blob = new Blob([csv], 
+                            {type:'text/csv'});
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `${dataset?.id}_metadata.csv`;
+                          a.click();
+                          URL.revokeObjectURL(url);
+                        }}
+                        className="w-10 h-10 flex items-center 
+                          justify-center rounded-xl border 
+                          border-ocean-700 hover:border-teal-500/50 
+                          hover:bg-ocean-900 transition-all 
+                          text-[10px] font-mono text-text-500 
+                          hover:text-teal-400"
+                      >CSV</button>
                     </div>
                 </div>
             </div>

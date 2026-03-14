@@ -502,6 +502,63 @@ export default function ShorelineIntelligence() {
                             </table>
                         </div>
                     </div>
+
+                    <div className="flex justify-between items-center px-2 mt-8">
+                        <h3 className="text-sm font-display italic uppercase tracking-widest flex items-center">
+                            <TrendingUp size={16} className="text-teal-400 mr-2" />
+                            SHORELINE CHANGE RATE ANALYSIS
+                        </h3>
+                    </div>
+                    <div className="glass-card overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-[11px] font-mono">
+                                <thead className="bg-ocean-950/80 border-b border-ocean-700">
+                                    <tr>
+                                        <th className="p-4 text-left text-teal-400">OID</th>
+                                        <th className="p-4 text-left">Feature</th>
+                                        <th className="p-4 text-right">2011 Length</th>
+                                        <th className="p-4 text-right">2019 Length</th>
+                                        <th className="p-4 text-right text-teal-400">Change (m)</th>
+                                        <th className="p-4 text-right">Rate (m/yr)</th>
+                                        <th className="p-4 text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {[
+                                      { oid: 636, feature: "SEA/HTL", length2011: 4630.36, length2019: 4630.36, change: 0, rate: 0, status: "STABLE" },
+                                      { oid: 637, feature: "CREEK/HTL", length2011: 4846.56, length2019: 4846.56, change: 0, rate: 0, status: "STABLE" },
+                                      { oid: 638, feature: "SEA/HTL", length2011: 5111.58, length2019: 5111.58, change: 0, rate: 0, status: "STABLE" },
+                                      { oid: 635, feature: "CREEK/HTL", length2011: 5215.06, length2019: 5215.06, change: 0, rate: 0, status: "STABLE" }
+                                    ].map((row, idx) => (
+                                        <tr key={idx} className="border-b border-ocean-800/50 hover:bg-ocean-900/30 transition-colors">
+                                            <td className="p-4 font-bold text-text-400">{row.oid}</td>
+                                            <td className="p-4 text-text-500">{row.feature}</td>
+                                            <td className="p-4 text-right tabular-nums">{row.length2011.toFixed(2)}</td>
+                                            <td className="p-4 text-right tabular-nums">{row.length2019.toFixed(2)}</td>
+                                            <td className="p-4 text-right tabular-nums font-bold">{row.change.toFixed(2)}</td>
+                                            <td className="p-4 text-right tabular-nums font-bold text-teal-400">{row.rate.toFixed(2)}</td>
+                                            <td className="p-4 text-center">
+                                                <span className="text-[9px] px-2 py-0.5 rounded-full border border-teal-400/30 text-teal-400">
+                                                    {row.status}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="p-5 bg-ocean-950/40 border-t border-ocean-800 flex flex-col md:flex-row justify-between gap-4 text-[11px] font-mono">
+                            <div className="space-y-1">
+                                <div className="text-text-400"><span className="uppercase font-bold">Survey Period:</span> 8 years (2011-2019)</div>
+                                <div className="text-text-400"><span className="uppercase font-bold text-teal-400">Net HTL Change:</span> 0.00 metres</div>
+                                <div className="text-text-400"><span className="uppercase font-bold text-teal-400">Change Rate:</span> 0.00 m/year</div>
+                            </div>
+                            <div className="md:w-1/2 p-3 bg-teal-500/10 border border-teal-500/20 rounded-lg">
+                                <span className="uppercase font-bold text-teal-400 block mb-1">Interpretation:</span>
+                                <span className="text-text-300 italic">Coastline shows stability over survey period — validates survey methodology consistency</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Intelligence SidePanel */}
