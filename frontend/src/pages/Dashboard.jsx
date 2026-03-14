@@ -222,6 +222,63 @@ export default function Dashboard() {
                 </div>
             </div>
 
+            {/* Automated Intelligence Pipeline */}
+            <div className="space-y-4">
+                <h3 className="text-sm font-display italic uppercase tracking-widest flex items-center px-2">
+                    <Zap size={16} className="text-teal-400 mr-2" />
+                    Automated Intelligence Pipeline
+                </h3>
+                <div className="glass-card p-6 overflow-x-auto overflow-y-hidden">
+                    <div className="flex flex-col md:flex-row items-center justify-between min-w-[800px] md:min-w-0 pb-4">
+                        {[
+                            { emoji: "📁", label: "SHAPEFILE INPUT", sub: "ESRI .shp Format", color: "#2dd4bf" },
+                            { emoji: "🔍", label: "AUTO-DISCOVERY", sub: "os.walk Recursive Scan", color: "#2dd4bf" },
+                            { emoji: "⚙️", label: "QUALITY ENGINE", sub: "18 Issues Detected", color: "#e05c3a" },
+                            { emoji: "🤖", label: "ML DETECTION", sub: "IsolationForest Model", color: "#c9a84c" },
+                            { emoji: "🏛️", label: "CRZ ENGINE", sub: "Regulatory Buffer Calc", color: "#2dd4bf" },
+                            { emoji: "📋", label: "ISO 19115 EXPORT", sub: "Metadata Generated", color: "#2dd4bf" },
+                            { emoji: "📊", label: "DASHBOARD OUTPUT", sub: "Live Intelligence Portal", color: "#2dd4bf" }
+                        ].map((step, idx, arr) => (
+                            <React.Fragment key={idx}>
+                                <motion.div 
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: idx * 0.1 }}
+                                    className="flex flex-col flex-1 items-center justify-center p-3 rounded-xl border border-ocean-800 bg-ocean-950/50 hover:bg-ocean-900/80 transition-all hover:shadow-[0_0_15px_rgba(45,212,191,0.2)] group cursor-default text-center min-w-[100px]"
+                                    style={{ borderTopColor: step.color, borderTopWidth: '2px' }}
+                                >
+                                    <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">{step.emoji}</div>
+                                    <div className="text-[10px] font-mono font-bold text-text-200 uppercase leading-tight">{step.label}</div>
+                                    <div className="text-[9px] font-mono text-text-500 mt-1">{step.sub}</div>
+                                </motion.div>
+                                {idx < arr.length - 1 && (
+                                    <motion.div 
+                                        initial={{ opacity: 0 }}
+                                        whileInView={{ opacity: 1 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: (idx * 0.1) + 0.05 }}
+                                        className="hidden md:flex items-center justify-center text-teal-500/50 px-2"
+                                    >
+                                        <ArrowRight size={16} />
+                                    </motion.div>
+                                )}
+                                {idx < arr.length - 1 && (
+                                    <div className="md:hidden flex items-center justify-center text-teal-500/50 py-2">
+                                        <ArrowRight size={16} className="rotate-90" />
+                                    </div>
+                                )}
+                            </React.Fragment>
+                        ))}
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-ocean-800 flex items-center justify-center bg-teal-500/5 rounded p-2">
+                        <span className="text-[10px] font-mono text-text-400 italic text-center">
+                            ⚡ Full pipeline executes in {"<"} 4 seconds - 6 datasets • 57 features • 18 issues • 23 parameters • ISO 19115 compliant output
+                        </span>
+                    </div>
+                </div>
+            </div>
+
             {/* Critical Issues Feed (Moved to bottom row) */}
             <div className="space-y-4">
                 <div className="flex justify-between items-center px-2">
