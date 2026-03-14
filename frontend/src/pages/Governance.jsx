@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useCoast } from '../CoastContext';
 import { FALLBACK_DATASETS } from '../data/fallbackData';
-import { Gavel, ShieldAlert, CheckCircle, ExternalLink, Calendar, TrendingDown, ClipboardList, Info, Globe, Cpu, Server, Layers } from 'lucide-react';
+import { Gavel, ShieldAlert, CheckCircle, ExternalLink, Calendar, TrendingDown, ClipboardList, Info, Globe, Cpu, Server, Layers, Database } from 'lucide-react';
 import TideVaultLogo from '../assets/TideVaultLogo';
 import axios from 'axios';
 import { motion } from 'framer-motion';
