@@ -217,8 +217,8 @@ export default function ShorelineIntelligence() {
                 <div className="h-[500px] relative group">
                     <MapContainer
                         key={activeSite}
-                        center={activeSite === 'location_a' ? [19.07, 72.87] : [19.07, 72.85]}
-                        zoom={13}
+                        center={activeSite === 'location_a' ? [19.08, 72.83] : [19.05, 72.81]}
+                        zoom={12}
                         style={{ height: '100%', width: '100%' }}
                     >
                         <TileLayer 
