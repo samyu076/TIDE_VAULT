@@ -152,13 +152,13 @@ export default function ShorelineIntelligence() {
                             <div className="flex justify-between items-end">
                                 <span className="text-[10px] text-text-500 uppercase">HTL Length Change</span>
                                 <span className={`text-sm font-bold ${currentComp?.change > 0 ? 'text-teal-400' : 'text-coral-500'}`}>
-                                    {currentComp ? `${currentComp.change > 0 ? '+' : ''}${currentComp.change.toFixed(1)}m` : '+1,240m'}
+                                    {currentComp ? `${currentComp.change > 0 ? '+' : ''}${currentComp.change?.toFixed(1) || '0.0'}m` : '+1,240m'}
                                 </span>
                             </div>
                             <div className="flex justify-between items-end">
                                 <span className="text-[10px] text-text-500 uppercase">Percentage Shift</span>
                                 <span className="text-sm font-bold text-text-200">
-                                    {currentComp ? (((currentComp?.change / currentComp?.length_2011) * 100).toFixed(2) + '%') : '6.4%'}
+                                    {currentComp ? (currentComp.length_2011 ? ((currentComp.change / currentComp.length_2011) * 100).toFixed(2) + '%' : '—') : '6.4%'}
                                 </span>
                             </div>
                             <div className="h-1 bg-ocean-950 rounded-full mt-2">
@@ -179,7 +179,7 @@ export default function ShorelineIntelligence() {
                             </div>
                             <div className="flex justify-between items-end text-xs">
                                 <span className="text-text-500 uppercase">Avg Seg Length</span>
-                                <span className="font-bold text-text-200">{currentComp ? currentComp.avg_len_2019.toFixed(1) : '842'}m</span>
+                                <span className="font-bold text-text-200">{currentComp ? (currentComp.avg_len_2019?.toFixed(1) || '—') : '842'}m</span>
                             </div>
                             <div className="h-1 bg-ocean-950 rounded-full mt-2">
                                 <div className="h-full bg-gold-500/50" style={{ width: '40%' }}></div>
@@ -218,8 +218,8 @@ export default function ShorelineIntelligence() {
                     <MapContainer
                       key={activeSite}
                       center={activeSite === 'location_a' 
-                        ? [19.079, 72.833] 
-                        : [19.058, 72.816]}
+                        ? [19.065, 72.824] 
+                        : [19.175, 72.790]}
                       zoom={13}
                       style={{ height: '100%', width: '100%' }}
                     >
@@ -232,41 +232,15 @@ export default function ShorelineIntelligence() {
                         <LayersControl.Overlay checked name="HTL 2011 (Orange)">
                           <LayerGroup>
                             {activeSite === 'location_a' ? (
-                              <>
-                                <Polyline
-                                  positions={[
-                                    [19.074, 72.826],[19.076, 72.828],
-                                    [19.079, 72.831],[19.082, 72.834],
-                                    [19.085, 72.837],[19.088, 72.840]
-                                  ]}
-                                  pathOptions={{color:'#F87171',weight:4,opacity:0.8}}
-                                />
-                                <Polyline
-                                  positions={[
-                                    [19.065, 72.820],[19.068, 72.823],
-                                    [19.071, 72.825],[19.074, 72.827]
-                                  ]}
-                                  pathOptions={{color:'#F87171',weight:4,opacity:0.8}}
-                                />
-                              </>
+                              <Polyline
+                                positions={[[19.055, 72.823], [19.05631, 72.82334], [19.05774, 72.82293], [19.05903, 72.82338], [19.06037, 72.82353], [19.06163, 72.82423], [19.06297, 72.82437], [19.06428, 72.82479], [19.06573, 72.82419], [19.06701, 72.82472], [19.0684, 72.82453], [19.06971, 72.82492], [19.071, 72.82541], [19.0724, 72.82513], [19.07371, 72.8255], [19.075, 72.826]]}
+                                pathOptions={{color:'#F87171',weight:4,opacity:0.8}}
+                              />
                             ) : (
-                              <>
-                                <Polyline
-                                  positions={[
-                                    [19.052, 72.810],[19.055, 72.813],
-                                    [19.058, 72.816],[19.061, 72.819],
-                                    [19.064, 72.822]
-                                  ]}
-                                  pathOptions={{color:'#F87171',weight:4,opacity:0.8}}
-                                />
-                                <Polyline
-                                  positions={[
-                                    [19.045, 72.805],[19.048, 72.808],
-                                    [19.050, 72.810],[19.052, 72.812]
-                                  ]}
-                                  pathOptions={{color:'#F87171',weight:4,opacity:0.8}}
-                                />
-                              </>
+                              <Polyline
+                                positions={[[19.165, 72.795], [19.1663, 72.79426], [19.16756, 72.79345], [19.16889, 72.79277], [19.17024, 72.79215], [19.17176, 72.79185], [19.17291, 72.79082], [19.17429, 72.79025], [19.17573, 72.7898], [19.17701, 72.78903], [19.17849, 72.78865], [19.17966, 72.78766], [19.18097, 72.78694], [19.18237, 72.78641], [19.18357, 72.78546], [19.185, 72.785]]}
+                                pathOptions={{color:'#F87171',weight:4,opacity:0.8}}
+                              />
                             )}
                           </LayerGroup>
                         </LayersControl.Overlay>
@@ -274,41 +248,15 @@ export default function ShorelineIntelligence() {
                         <LayersControl.Overlay checked name="HTL 2019 (Teal)">
                           <LayerGroup>
                             {activeSite === 'location_a' ? (
-                              <>
-                                <Polyline
-                                  positions={[
-                                    [19.075, 72.827],[19.077, 72.829],
-                                    [19.080, 72.832],[19.083, 72.835],
-                                    [19.086, 72.838],[19.089, 72.841]
-                                  ]}
-                                  pathOptions={{color:'#2DD4BF',weight:5,opacity:0.9}}
-                                />
-                                <Polyline
-                                  positions={[
-                                    [19.066, 72.821],[19.069, 72.824],
-                                    [19.072, 72.826],[19.075, 72.828]
-                                  ]}
-                                  pathOptions={{color:'#2DD4BF',weight:5,opacity:0.9}}
-                                />
-                              </>
+                              <Polyline
+                                positions={[[19.055, 72.823], [19.05644, 72.82247], [19.05762, 72.82371], [19.05908, 72.82304], [19.06034, 72.82374], [19.06163, 72.82427], [19.06293, 72.82466], [19.06434, 72.82433], [19.06567, 72.8246], [19.06711, 72.82404], [19.06835, 72.82489], [19.0697, 72.825], [19.07092, 72.82596], [19.07232, 72.82567], [19.07361, 72.8262], [19.075, 72.826]]}
+                                pathOptions={{color:'#2DD4BF',weight:5,opacity:0.9}}
+                              />
                             ) : (
-                              <>
-                                <Polyline
-                                  positions={[
-                                    [19.053, 72.811],[19.056, 72.814],
-                                    [19.059, 72.817],[19.062, 72.820],
-                                    [19.065, 72.823]
-                                  ]}
-                                  pathOptions={{color:'#2DD4BF',weight:5,opacity:0.9}}
-                                />
-                                <Polyline
-                                  positions={[
-                                    [19.046, 72.806],[19.049, 72.809],
-                                    [19.051, 72.811],[19.053, 72.813]
-                                  ]}
-                                  pathOptions={{color:'#2DD4BF',weight:5,opacity:0.9}}
-                                />
-                              </>
+                              <Polyline
+                                positions={[[19.165, 72.795], [19.16611, 72.79389], [19.16764, 72.79361], [19.16917, 72.79334], [19.17046, 72.79259], [19.17181, 72.79196], [19.17296, 72.79092], [19.17452, 72.79071], [19.17569, 72.78971], [19.17674, 72.78847], [19.17831, 72.78828], [19.17938, 72.7871], [19.18127, 72.78754], [19.18261, 72.78689], [19.18356, 72.78546], [19.185, 72.785]]}
+                                pathOptions={{color:'#2DD4BF',weight:5,opacity:0.9}}
+                              />
                             )}
                           </LayerGroup>
                         </LayersControl.Overlay>
@@ -317,11 +265,11 @@ export default function ShorelineIntelligence() {
                           <LayerGroup>
                             <Polyline
                               positions={activeSite === 'location_a' ? [
-                                [19.074, 72.827],[19.077, 72.830],
-                                [19.080, 72.833],[19.083, 72.836]
+                                [19.055, 72.825], [19.062, 72.826],
+                                [19.069, 72.827], [19.075, 72.828]
                               ] : [
-                                [19.053, 72.812],[19.056, 72.815],
-                                [19.059, 72.818],[19.062, 72.821]
+                                [19.165, 72.797], [19.172, 72.794],
+                                [19.178, 72.791], [19.185, 72.787]
                               ]}
                               pathOptions={{
                                 color:'#c9a84c',weight:2,
@@ -335,11 +283,11 @@ export default function ShorelineIntelligence() {
                           <LayerGroup>
                             <Polyline
                               positions={activeSite === 'location_a' ? [
-                                [19.075, 72.828],[19.078, 72.831],
-                                [19.081, 72.834]
+                                [19.055, 72.821], [19.062, 72.822],
+                                [19.069, 72.823], [19.075, 72.824]
                               ] : [
-                                [19.054, 72.813],[19.057, 72.816],
-                                [19.060, 72.819]
+                                [19.165, 72.793], [19.172, 72.790],
+                                [19.178, 72.787], [19.185, 72.783]
                               ]}
                               pathOptions={{
                                 color:'#e05c3a',weight:2,
@@ -381,7 +329,7 @@ export default function ShorelineIntelligence() {
                             }
                             {/* Fallback anomaly markers when backend offline */}
                             <Marker 
-                              position={[19.083, 72.835]} 
+                              position={activeSite === 'location_a' ? [19.06434, 72.82433] : [19.172, 72.792]} 
                               icon={anomalyIcon}
                             >
                               <Popup>
@@ -399,7 +347,7 @@ export default function ShorelineIntelligence() {
                               </Popup>
                             </Marker>
                             <Marker 
-                              position={[19.058, 72.816]} 
+                              position={activeSite === 'location_a' ? [19.0684, 72.82453] : [19.17674, 72.78847]} 
                               icon={anomalyIcon}
                             >
                               <Popup>
@@ -490,7 +438,7 @@ export default function ShorelineIntelligence() {
                                             <td className="p-4 text-text-500">{seg.feature_2011 || '—'}</td>
                                             <td className="p-4 text-center opacity-30">→</td>
                                             <td className="p-4 text-text-100 font-bold">{seg.feature_2019}</td>
-                                            <td className="p-4 text-right tabular-nums">{seg.length_2019.toFixed(2)}</td>
+                                            <td className="p-4 text-right tabular-nums">{seg.length_2019 ? seg.length_2019.toFixed(2) : '—'}</td>
                                             <td className="p-4 text-center">
                                                 <span className={`text-[9px] px-2 py-0.5 rounded-full border border-current ${seg.status === 'STABLE' ? 'text-teal-400' : 'text-gold-500'}`}>
                                                     {seg.status}

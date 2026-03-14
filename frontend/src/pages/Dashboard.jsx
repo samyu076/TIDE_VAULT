@@ -218,68 +218,46 @@ export default function Dashboard() {
                       
                       <Polyline
                         positions={[
-                          [19.074, 72.826], [19.076, 72.828],
-                          [19.079, 72.831], [19.082, 72.834],
-                          [19.085, 72.837], [19.088, 72.840]
+                          [19.055, 72.823], [19.05631, 72.82334], [19.05774, 72.82293], [19.05903, 72.82338], [19.06037, 72.82353], [19.06163, 72.82423], [19.06297, 72.82437], [19.06428, 72.82479], [19.06573, 72.82419], [19.06701, 72.82472], [19.0684, 72.82453], [19.06971, 72.82492], [19.071, 72.82541], [19.0724, 72.82513], [19.07371, 72.8255], [19.075, 72.826]
                         ]}
-                        pathOptions={{ color: '#F87171', weight: 3, opacity: 0.9 }}
+                        pathOptions={{ color: '#F87171', weight: 4, opacity: 0.9 }}
                       />
                       <Polyline
                         positions={[
-                          [19.065, 72.820], [19.068, 72.823],
-                          [19.071, 72.825], [19.074, 72.827]
+                          [19.165, 72.795], [19.1663, 72.79426], [19.16756, 72.79345], [19.16889, 72.79277], [19.17024, 72.79215], [19.17176, 72.79185], [19.17291, 72.79082], [19.17429, 72.79025], [19.17573, 72.7898], [19.17701, 72.78903], [19.17849, 72.78865], [19.17966, 72.78766], [19.18097, 72.78694], [19.18237, 72.78641], [19.18357, 72.78546], [19.185, 72.785]
                         ]}
-                        pathOptions={{ color: '#F87171', weight: 3, opacity: 0.9 }}
-                      />
-                      <Polyline
-                        positions={[
-                          [19.052, 72.810], [19.055, 72.813],
-                          [19.058, 72.816], [19.061, 72.819],
-                          [19.064, 72.822]
-                        ]}
-                        pathOptions={{ color: '#F87171', weight: 3, opacity: 0.9 }}
+                        pathOptions={{ color: '#F87171', weight: 4, opacity: 0.9 }}
                       />
                       
                       <Polyline
                         positions={[
-                          [19.075, 72.827], [19.077, 72.829],
-                          [19.080, 72.832], [19.083, 72.835],
-                          [19.086, 72.838], [19.089, 72.841]
+                          [19.055, 72.823], [19.05644, 72.82247], [19.05762, 72.82371], [19.05908, 72.82304], [19.06034, 72.82374], [19.06163, 72.82427], [19.06293, 72.82466], [19.06434, 72.82433], [19.06567, 72.8246], [19.06711, 72.82404], [19.06835, 72.82489], [19.0697, 72.825], [19.07092, 72.82596], [19.07232, 72.82567], [19.07361, 72.8262], [19.075, 72.826]
                         ]}
-                        pathOptions={{ color: '#2DD4BF', weight: 4, opacity: 0.9 }}
+                        pathOptions={{ color: '#2DD4BF', weight: 4, opacity: 0.9, dashArray: '8 4' }}
                       />
                       <Polyline
                         positions={[
-                          [19.066, 72.821], [19.069, 72.824],
-                          [19.072, 72.826], [19.075, 72.828]
+                          [19.165, 72.795], [19.16611, 72.79389], [19.16764, 72.79361], [19.16917, 72.79334], [19.17046, 72.79259], [19.17181, 72.79196], [19.17296, 72.79092], [19.17452, 72.79071], [19.17569, 72.78971], [19.17674, 72.78847], [19.17831, 72.78828], [19.17938, 72.7871], [19.18127, 72.78754], [19.18261, 72.78689], [19.18356, 72.78546], [19.185, 72.785]
                         ]}
-                        pathOptions={{ color: '#2DD4BF', weight: 4, opacity: 0.9 }}
-                      />
-                      <Polyline
-                        positions={[
-                          [19.053, 72.811], [19.056, 72.814],
-                          [19.059, 72.817], [19.062, 72.820],
-                          [19.065, 72.823]
-                        ]}
-                        pathOptions={{ color: '#2DD4BF', weight: 4, opacity: 0.9 }}
+                        pathOptions={{ color: '#2DD4BF', weight: 4, opacity: 0.9, dashArray: '8 4' }}
                       />
                     
-                      <Marker position={[19.076, 72.827]} icon={createCustomIcon('#1a9e8f')}>
+                      <Marker position={[19.055, 72.823]} icon={createCustomIcon('#1a9e8f')}>
                         <Popup><div className="font-mono text-xs"><b>A_2011</b><br/>Location A • Site 2</div></Popup>
                       </Marker>
-                      <Marker position={[19.082, 72.834]} icon={createCustomIcon('#1a9e8f')}>
+                      <Marker position={[19.075, 72.826]} icon={createCustomIcon('#1a9e8f')}>
                         <Popup><div className="font-mono text-xs"><b>A_2019</b><br/>Location A • Site 2</div></Popup>
                       </Marker>
-                      <Marker position={[19.065, 72.820]} icon={createCustomIcon('#c9a84c')}>
+                      <Marker position={[19.065, 72.824]} icon={createCustomIcon('#c9a84c')}>
                         <Popup><div className="font-mono text-xs"><b>A_Boundary</b><br/>Location A • Site 2</div></Popup>
                       </Marker>
-                      <Marker position={[19.052, 72.811]} icon={createCustomIcon('#1a9e8f')}>
+                      <Marker position={[19.165, 72.795]} icon={createCustomIcon('#1a9e8f')}>
                         <Popup><div className="font-mono text-xs"><b>C_2011</b><br/>Location B • Site 1</div></Popup>
                       </Marker>
-                      <Marker position={[19.058, 72.816]} icon={createCustomIcon('#1a9e8f')}>
+                      <Marker position={[19.185, 72.785]} icon={createCustomIcon('#1a9e8f')}>
                         <Popup><div className="font-mono text-xs"><b>C_2019</b><br/>Location B • Site 1</div></Popup>
                       </Marker>
-                      <Marker position={[19.045, 72.805]} icon={createCustomIcon('#c9a84c')}>
+                      <Marker position={[19.175, 72.790]} icon={createCustomIcon('#c9a84c')}>
                         <Popup><div className="font-mono text-xs"><b>C_Boundary</b><br/>Location B • Site 1</div></Popup>
                       </Marker>
                     
