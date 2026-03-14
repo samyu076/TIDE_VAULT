@@ -23,7 +23,7 @@ def generate_iso19115_xml(dataset_id: str) -> str:
     <gmd:MD_DataIdentification>
       <gmd:citation>
         <gmd:CI_Citation>
-          <gmd:title><gco:CharacterString>CoastMeta-AI: {site} Coastal Survey {year}</gco:CharacterString></gmd:title>
+          <gmd:title><gco:CharacterString>TideVault: {site} Coastal Survey {year}</gco:CharacterString></gmd:title>
           <gmd:date>
             <gmd:CI_Date>
               <gmd:date><gco:Date>{year}-01-01</gco:Date></gmd:date>
@@ -51,7 +51,7 @@ def generate_iso19115_xml(dataset_id: str) -> str:
     <gmd:DQ_DataQuality>
       <gmd:lineage>
         <gmd:LI_Lineage>
-          <gmd:statement><gco:CharacterString>Processed and catalogued by CoastMeta-AI system. CRS: EPSG:32643.</gco:CharacterString></gmd:statement>
+          <gmd:statement><gco:CharacterString>Processed and catalogued by TideVault system. CRS: EPSG:32643.</gco:CharacterString></gmd:statement>
         </gmd:LI_Lineage>
       </gmd:lineage>
     </gmd:DQ_DataQuality>

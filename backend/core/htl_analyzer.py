@@ -111,6 +111,10 @@ def analyze_htl_continuity(site: str) -> dict:
     dupes_2011 = find_duplicates(htl_2011)
     dupes_2019 = find_duplicates(htl_2019)
 
+    impact = "CRITICAL" if any(v >= 4 for v in dupes_2019.values()) else \
+             "HIGH" if any(v >= 3 for v in dupes_2019.values()) else \
+             "LOW"
+
     total_len_2011 = sum(float(r["Shape_Leng"]) for r in unique_2011)
     total_len_2019 = sum(float(r["Shape_Leng"]) for r in unique_2019)
 
@@ -130,7 +134,7 @@ def analyze_htl_continuity(site: str) -> dict:
             "net_change_m": round(total_len_2019 - total_len_2011, 2),
             "segment_count_change": len(unique_2019) - len(unique_2011),
         },
-        "duplicates_detected": {"in_2011": dupes_2011, "in_2019": dupes_2019},
+        "duplicates_detected": {"in_2011": dupes_2011, "in_2019": dupes_2019, "traceability_impact": impact},
         "segment_comparison": comparison,
         "continuity_score": continuity_score,
         "coords_2011": coords_2011,

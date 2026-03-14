@@ -44,7 +44,7 @@ export default function CRZCompliance() {
         const fetchAreas = async () => {
             try {
                 // Fetch stats for A_2019 which has buffer calculations
-                const res = await axios.get('http://localhost:8000/api/parameters/A_2019.shp');
+                const res = await axios.get('http://localhost:8000/api/parameters/A_2019');
                 setAreaStats(res.data.buffer_areas);
             } catch (err) {
                 console.warn("Failed to fetch buffer area stats.");

@@ -9,7 +9,9 @@ const DEMO_USERS = [
     {
         username: "demo@tidevault.in",
         password: "demo123",
-    }
+    },
+    { username: "tidevault", password: "coast2026" },
+    { username: "judge@tidevault.in", password: "TVault2026" }
 ];
 
 export default function Login() {

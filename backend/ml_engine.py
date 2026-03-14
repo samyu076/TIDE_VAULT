@@ -3,6 +3,7 @@ import pandas as pd
 from sklearn.ensemble import IsolationForest
 import numpy as np
 from core.data_loader import DATASET_REGISTRY, DATA_DIR
+from pyproj import Transformer
 
 def detect_anomalies():
     """
@@ -47,7 +48,7 @@ def detect_anomalies():
     # Max score (most normal) -> high confidence, Min score (most anomaly) -> high confidence of anomaly
     min_score = scores.min()
     max_score = scores.max()
-    
+    transformer = Transformer.from_crs("EPSG:32643", "EPSG:4326", always_xy=True)
     results = []
     for i, row in df.iterrows():
         is_anomaly = preds[i] == -1
@@ -65,6 +66,14 @@ def detect_anomalies():
              is_anomaly = True # Ensure it's flagged as requested
              confidence = 94.2
 
+        if row["geometry"] and not row["geometry"].is_empty:
+            cx = row["geometry"].centroid.x
+            cy = row["geometry"].centroid.y  
+            lon, lat = transformer.transform(cx, cy)
+        else:
+            lat = None
+            lon = None
+
         results.append({
             "oid": int(row["oid"]),
             "dataset": row["dataset"],
@@ -72,9 +81,8 @@ def detect_anomalies():
             "anomaly_score": int(preds[i]),
             "confidence": float(confidence),
             "status": "ANOMALY" if is_anomaly else "NORMAL",
-            # Centroid for map markers - provide explicit lat/lng for frontend
-            "lat": row["geometry"].centroid.y if (row["geometry"] and not row["geometry"].is_empty) else None,
-            "lng": row["geometry"].centroid.x if (row["geometry"] and not row["geometry"].is_empty) else None
+            "lat": lat,
+            "lng": lon
         })
         
     return results

@@ -52,11 +52,11 @@ def detect_issues(gdf, dataset_id: str) -> list:
     # 4. Blank mandatory fields
     for field in ["Feature_Na", "OBJECTID", "CTS_CS_NO", "Coordinato"]:
         if field in gdf.columns:
-            blank_mask = (
-                gdf[field].isna() |
-                (gdf[field].astype(str).str.strip() == "") |
-                (gdf[field].astype(str).str.strip() == "0")
-            )
+            if field == "OBJECTID":
+                blank_mask = (gdf[field].isna() | (gdf[field] == 0))
+            else:
+                blank_mask = (gdf[field].isna() |
+                              (gdf[field].astype(str).str.strip() == ""))
             blanks = gdf[blank_mask]
             if len(blanks) > 0:
                 severity = "HIGH" if field == "OBJECTID" else "MEDIUM"

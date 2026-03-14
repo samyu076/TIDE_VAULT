@@ -318,15 +318,19 @@ export const FALLBACK_HTL = {
             traceability_impact: "HIGH"
         },
         segment_comparison: [
-            // ... (keep records)
+            { oid: 636, feature_2011: "HTL", feature_2019: "SEA", length_2019: 4630.36, status: "STABLE" },
+            { oid: 637, feature_2011: "HTL (x3 dup)", feature_2019: "CREEK (x3 dup)", length_2019: 4846.56, status: "STABLE" },
+            { oid: 638, feature_2011: "HTL", feature_2019: "SEA", length_2019: 5111.58, status: "STABLE" },
+            { oid: 692, feature_2011: "HTL", feature_2019: "CREEK", length_2019: 92.38, status: "STABLE" },
+            { oid: 47, feature_2011: null, feature_2019: "CRZ", length_2019: 4164.08, status: "NEW_SEGMENT" },
+            { oid: 27, feature_2011: null, feature_2019: "NDZ", length_2019: 786.10, status: "NEW_SEGMENT" },
+            { oid: 11, feature_2011: null, feature_2019: "LTL", length_2019: 30141.87, status: "NEW_SEGMENT" }
         ],
         coords_2011: [
-            [[19.280, 72.860], [19.282, 72.861], [19.285, 72.865], [19.290, 72.870]],
-            [[19.300, 72.880], [19.305, 72.882], [19.310, 72.890]]
+            [[19.07, 72.83], [19.08, 72.84], [19.09, 72.85]]
         ],
         coords_2019: [
-            [[19.281, 72.861], [19.283, 72.862], [19.286, 72.866], [19.291, 72.871]],
-            [[19.301, 72.881], [19.306, 72.883], [19.311, 72.891]]
+            [[19.07, 72.83], [19.08, 72.84], [19.09, 72.85]]
         ]
     },
     location_b: {
@@ -346,15 +350,17 @@ export const FALLBACK_HTL = {
             traceability_impact: "CRITICAL"
         },
         segment_comparison: [
-            // ... (keep records)
+            { oid: 635, feature_2011: "HTL (x4 dup)", feature_2019: "CREEK (x4 dup)", length_2019: 5215.06, status: "STABLE" },
+            { oid: 636, feature_2011: "HTL", feature_2019: "SEA", length_2019: 4630.36, status: "STABLE" },
+            { oid: 47, feature_2011: null, feature_2019: "CRZ", length_2019: 4164.08, status: "NEW_SEGMENT" },
+            { oid: 48, feature_2011: null, feature_2019: "CRZ", length_2019: 481.63, status: "NEW_SEGMENT" },
+            { oid: 11, feature_2011: null, feature_2019: "LTL", length_2019: 30141.87, status: "NEW_SEGMENT" }
         ],
         coords_2011: [
-            [[19.180, 72.840], [19.182, 72.845], [19.185, 72.850], [19.190, 72.855]],
-            [[19.200, 72.860], [19.205, 72.865], [19.210, 72.870]]
+            [[19.05, 72.82], [19.06, 72.83], [19.07, 72.84]]
         ],
         coords_2019: [
-            [[19.181, 72.841], [19.183, 72.846], [19.186, 72.851], [19.191, 72.856]],
-            [[19.201, 72.861], [19.206, 72.866], [19.211, 72.871]]
+            [[19.05, 72.82], [19.06, 72.83], [19.07, 72.84]]
         ]
     }
 };

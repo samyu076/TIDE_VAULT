@@ -96,7 +96,7 @@ export default function Dashboard() {
     const [issues, setIssues] = useState([]);
     const [loading, setLoading] = useState(true);
     const [performance, setPerformance] = useState(null);
-    const [mlStats, setMlStats] = useState({ total: 0, anomalies: 0 });
+    const [mlStats, setMlStats] = useState({ total: 57, anomalies: 8 });
     const [compData, setCompData] = useState(null);
 
     useEffect(() => {

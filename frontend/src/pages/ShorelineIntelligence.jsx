@@ -105,7 +105,7 @@ export default function ShorelineIntelligence() {
         return <LoadingScreen message="TideVault — Computing Continuity Matrices..." />;
     }
 
-    const siteIdMap = { 'location_a': 'A', 'location_b': 'C' };
+    const siteIdMap = { 'location_a': 'Location A', 'location_b': 'Location B' };
     const siteKey = siteIdMap[activeSite];
     const currentComp = compData ? compData[siteKey] : null;
 
@@ -151,14 +151,14 @@ export default function ShorelineIntelligence() {
                         <div className="space-y-3">
                             <div className="flex justify-between items-end">
                                 <span className="text-[10px] text-text-500 uppercase">HTL Length Change</span>
-                                <span className={`text-sm font-bold ${currentComp?.length_diff > 0 ? 'text-teal-400' : 'text-coral-500'}`}>
-                                    {currentComp ? `${currentComp.length_diff > 0 ? '+' : ''}${currentComp.length_diff.toFixed(1)}m` : '+1,240m'}
+                                <span className={`text-sm font-bold ${currentComp?.change > 0 ? 'text-teal-400' : 'text-coral-500'}`}>
+                                    {currentComp ? `${currentComp.change > 0 ? '+' : ''}${currentComp.change.toFixed(1)}m` : '+1,240m'}
                                 </span>
                             </div>
                             <div className="flex justify-between items-end">
                                 <span className="text-[10px] text-text-500 uppercase">Percentage Shift</span>
                                 <span className="text-sm font-bold text-text-200">
-                                    {currentComp ? `${currentComp.percent_change.toFixed(2)}%` : '6.4%'}
+                                    {currentComp ? (((currentComp?.change / currentComp?.length_2011) * 100).toFixed(2) + '%') : '6.4%'}
                                 </span>
                             </div>
                             <div className="h-1 bg-ocean-950 rounded-full mt-2">
@@ -175,7 +175,7 @@ export default function ShorelineIntelligence() {
                         <div className="space-y-3">
                             <div className="flex justify-between items-end text-xs">
                                 <span className="text-text-500 uppercase">Feature Count Shift</span>
-                                <span className="font-bold text-gold-500">{currentComp ? currentComp.count_diff : '+5'} Assets</span>
+                                <span className="font-bold text-gold-500">{currentComp ? currentComp.count_change : '+5'} Assets</span>
                             </div>
                             <div className="flex justify-between items-end text-xs">
                                 <span className="text-text-500 uppercase">Avg Seg Length</span>
@@ -217,7 +217,7 @@ export default function ShorelineIntelligence() {
                 <div className="h-[500px] relative group">
                     <MapContainer
                         key={activeSite}
-                        center={activeSite === 'location_a' ? [19.29, 72.87] : [19.19, 72.85]}
+                        center={activeSite === 'location_a' ? [19.07, 72.87] : [19.07, 72.85]}
                         zoom={13}
                         style={{ height: '100%', width: '100%' }}
                     >
@@ -329,7 +329,7 @@ export default function ShorelineIntelligence() {
 
                 {/* Intelligence SidePanel */}
                 <div className="lg:col-span-4 space-y-6">
-                    {duplicates_detected.traceability_impact === 'HIGH' || duplicates_detected.traceability_impact === 'CRITICAL' ? (
+                    {Object.keys(duplicates_detected?.in_2019 || {}).length > 0 ? (
                         <div className="glass-card p-6 border-coral-500/40 bg-coral-500/5">
                             <h3 className="text-coral-500 font-bold text-sm uppercase flex items-center mb-3">
                                 <AlertCircle size={18} className="mr-2" />

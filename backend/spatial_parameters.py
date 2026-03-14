@@ -19,6 +19,7 @@ def get_parameters(dataset_id: str):
         gdf["Shape_Leng"] = gdf.length
         
     lengths = gdf["Shape_Leng"]
+    lengths = lengths[lengths > 0]
     
     # 1. Total HTL length
     # Note: Features might be HTL lines. 
@@ -45,11 +46,8 @@ def get_parameters(dataset_id: str):
     
     # 6. Feature count by type
     # If exists, use "Type" or similar column. If not, fallback to count.
-    type_counts = {}
-    if "TYPE" in gdf.columns:
-        type_counts = gdf["TYPE"].value_counts().to_dict()
-    elif "DESCRIPT" in gdf.columns:
-        type_counts = gdf["DESCRIPT"].value_counts().to_dict()
+    if "Feature_Na" in gdf.columns:
+        type_counts = gdf["Feature_Na"].value_counts().to_dict()
     else:
         type_counts = {"General": len(gdf)}
         

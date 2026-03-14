@@ -24,7 +24,7 @@ def calculate_tri(dataset_id: str, current_year: int = 2026) -> dict:
     age_score = max(0, round(100 - (age_years / 20 * 100), 1))
 
     # -- FACTOR 2: Update Frequency (weight 25%) --
-    update_gap = 8  # known from dataset pair comparison
+    update_gap = current_year - survey_year
     update_score = max(0, round(100 - (update_gap / 10 * 100), 1))
 
     # -- FACTOR 3: Spatial Accuracy (weight 25%) --
