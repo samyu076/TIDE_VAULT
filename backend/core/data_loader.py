@@ -18,8 +18,12 @@ def scan_and_register_datasets() -> dict:
     """
     registry = {}
     
-    # Recursively find all .shp files
-    shp_files = list(DATA_DIR.rglob("*.shp"))
+    # Recursively find all .shp files using os.walk() as per doc
+    shp_files = []
+    for root, dirs, files in os.walk(DATA_DIR):
+        for file in files:
+            if file.endswith(".shp"):
+                shp_files.append(Path(root) / file)
     
     for shp_path in shp_files:
         # Generate a clean dataset ID from the filename

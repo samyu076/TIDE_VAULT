@@ -9,3 +9,7 @@ pydantic
 python-multipart
 jinja2
 scikit-learn
+sqlalchemy
+psycopg2-binary
+geoalchemy2
+fpdf2

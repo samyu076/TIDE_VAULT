@@ -194,17 +194,17 @@ export default function Catalogue() {
                                             <table className="w-full text-[10px] font-mono">
                                                 <tbody>
                                                     <tr className="border-b border-ocean-800/50"><td className="py-2 text-text-500">Total HTL Length</td><td className="py-2 text-right text-text-100">{params.total_htl_length.toLocaleString()}m</td></tr>
-                                                    <tr className="border-b border-ocean-800/50"><td className="py-2 text-text-500">Mean Segment</td><td className="py-2 text-right text-text-100">{params.mean_length.toFixed(2)}m</td></tr>
-                                                    <tr className="border-b border-ocean-800/50"><td className="py-2 text-text-500">Max Segment</td><td className="py-2 text-right text-text-100">{params.max_length.toFixed(2)}m <span className="text-teal-500">(OID:{params.max_oid})</span></td></tr>
-                                                    <tr className=""><td className="py-2 text-text-500">Min Segment</td><td className="py-2 text-right text-text-100">{params.min_length.toFixed(2)}m <span className="text-teal-500">(OID:{params.min_oid})</span></td></tr>
+                                                    <tr className="border-b border-ocean-800/50"><td className="py-2 text-text-500">Mean Segment</td><td className="py-2 text-right text-text-100">{params.mean_length?.toFixed(2) || '0.00'}m</td></tr>
+                                                    <tr className="border-b border-ocean-800/50"><td className="py-2 text-text-500">Max Segment</td><td className="py-2 text-right text-text-100">{params.max_length?.toFixed(2) || '0.00'}m <span className="text-teal-500">(OID:{params.max_oid || '—'})</span></td></tr>
+                                                    <tr className=""><td className="py-2 text-text-500">Min Segment</td><td className="py-2 text-right text-text-100">{params.min_length?.toFixed(2) || '0.00'}m <span className="text-teal-500">(OID:{params.min_oid || '—'})</span></td></tr>
                                                 </tbody>
                                             </table>
                                         </div>
                                         <div className="glass-card p-4 border-ocean-800 bg-ocean-900/30">
                                             <table className="w-full text-[10px] font-mono">
                                                 <tbody>
-                                                    <tr className="border-b border-ocean-800/50"><td className="py-2 text-text-500">Std Deviation</td><td className="py-2 text-right text-text-100">{params.std_dev.toFixed(2)}</td></tr>
-                                                    <tr className="border-b border-ocean-800/50"><td className="py-2 text-text-500">Survey Area</td><td className="py-2 text-right text-text-100">{params.area_sqkm.toFixed(4)} sq.km</td></tr>
+                                                    <tr className="border-b border-ocean-800/50"><td className="py-2 text-text-500">Std Deviation</td><td className="py-2 text-right text-text-100">{params.std_dev?.toFixed(2) || '0.00'}</td></tr>
+                                                    <tr className="border-b border-ocean-800/50"><td className="py-2 text-text-500">Survey Area</td><td className="py-2 text-right text-text-100">{params.area_sqkm?.toFixed(4) || '0.0000'} sq.km</td></tr>
                                                     <tr className="border-b border-ocean-800/50"><td className="py-2 text-text-500">Feature Types</td><td className="py-2 text-right text-text-100">{Object.keys(params.feature_counts).length} types</td></tr>
                                                     <tr className=""><td className="py-2 text-text-500">Bounding Box</td><td className="py-2 text-right text-text-100 text-[8px] leading-tight">WGS84 Ready</td></tr>
                                                 </tbody>

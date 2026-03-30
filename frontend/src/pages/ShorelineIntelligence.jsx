@@ -481,10 +481,10 @@ export default function ShorelineIntelligence() {
                                         <tr key={idx} className="border-b border-ocean-800/50 hover:bg-ocean-900/30 transition-colors">
                                             <td className="p-4 font-bold text-text-400">{row.oid}</td>
                                             <td className="p-4 text-text-500">{row.feature}</td>
-                                            <td className="p-4 text-right tabular-nums">{row.length2011.toFixed(2)}</td>
-                                            <td className="p-4 text-right tabular-nums">{row.length2019.toFixed(2)}</td>
-                                            <td className="p-4 text-right tabular-nums font-bold">{row.change.toFixed(2)}</td>
-                                            <td className="p-4 text-right tabular-nums font-bold text-teal-400">{row.rate.toFixed(2)}</td>
+                                            <td className="p-4 text-right tabular-nums">{row.length2011?.toFixed(2) || '0.00'}</td>
+                                            <td className="p-4 text-right tabular-nums">{row.length2019?.toFixed(2) || '0.00'}</td>
+                                            <td className="p-4 text-right tabular-nums font-bold">{row.change?.toFixed(2) || '0.00'}</td>
+                                            <td className="p-4 text-right tabular-nums font-bold text-teal-400">{row.rate?.toFixed(2) || '0.00'}</td>
                                             <td className="p-4 text-center">
                                                 <span className="text-[9px] px-2 py-0.5 rounded-full border border-teal-400/30 text-teal-400">
                                                     {row.status}

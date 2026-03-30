@@ -1,16 +1,19 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import JSONResponse, Response, FileResponse
 from core.data_loader import load_dataset, DATASET_REGISTRY
 from core.tri_calculator import calculate_tri
 from core.htl_analyzer import analyze_htl_continuity
 from core.crz_engine import compute_crz_compliance
 from core.metadata_generator import generate_iso19115_xml
+from core.database_engine import MigrationEngine
+from core.pdf_generator import generate_crz_report
 from routers.datasets import router as framework_router
 from ml_engine import detect_anomalies
 from spatial_parameters import get_parameters, get_comparison, get_buffer_areas
 from performance_tracker import tracker
-import json
+from datetime import datetime
+import json, os
 
 app = FastAPI(title="TideVault API")
 
@@ -85,6 +88,52 @@ def get_dataset_parameters(dataset_id: str):
 @app.get("/api/performance")
 def get_performance_metrics():
     return tracker.get_report()
+
+# --- ENTERPRISE UPGRADE ENDPOINTS ---
+
+@app.post("/api/database/migrate/{dataset_id}")
+def migrate_dataset(dataset_id: str):
+    if dataset_id not in DATASET_REGISTRY:
+        raise HTTPException(status_code=404, detail="Dataset not found")
+    
+    # Use load_dataset to get the GeoDataFrame
+    # Usually load_dataset returns a dict, but we need the actual GDF
+    import geopandas as gpd
+    from core.data_loader import DATA_DIR
+    meta = DATASET_REGISTRY[dataset_id]
+    shp_path = DATA_DIR / meta["path"]
+    gdf = gpd.read_file(shp_path)
+    
+    db_engine = MigrationEngine()
+    result = db_engine.migrate_to_postgis(gdf, dataset_id)
+    
+    if result["status"] == "error":
+        raise HTTPException(status_code=500, detail=result["message"])
+        
+    return result
+
+@app.get("/api/crz/{site}/export/pdf")
+def export_crz_pdf(site: str):
+    try:
+        # 1. Gather all analytical data
+        compliance_data = compute_crz_compliance(site)
+        
+        # 2. Add TRI score context (using 2019 for the site)
+        site_ds_id = "A_2019" if site == "location_a" else "C_2019"
+        tri_data = calculate_tri(site_ds_id)
+        compliance_data["tri_context"] = tri_data
+        
+        # 3. Generate PDF
+        temp_filename = f"CRZ_Audit_Report_{site}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+        pdf_path = generate_crz_report(compliance_data, filename=temp_filename)
+        
+        return FileResponse(
+            path=pdf_path, 
+            filename=temp_filename,
+            media_type="application/pdf"
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"PDF Export Failed: {str(e)}")
 
 @app.get("/api/governance/dashboard")
 def get_governance_data():

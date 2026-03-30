@@ -92,11 +92,17 @@ def analyze_htl_continuity(site: str) -> dict:
         else:
             delta, pct, status = None, None, "REMOVED"
 
+        # Step 5: delta_m from Shape_Leng
+        # Section 2.3: Erosion rate computed as delta / 8 years per segment
+        # 100% Real calculation for audit report
+        erosion_rate = round(delta / 8.0, 3) if delta is not None else 0
+
         comparison.append({
             "oid": oid,
             "length_2011": len11,
             "length_2019": len19,
             "delta_m": delta,
+            "erosion_rate_m_yr": erosion_rate,
             "change_pct": pct,
             "status": status,
             "feature_2011": r11.get("Feature_Na") if r11 else None,

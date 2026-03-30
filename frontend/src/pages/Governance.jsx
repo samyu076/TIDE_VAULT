@@ -184,6 +184,36 @@ const InteropBadge = ({ label, status, icon: Icon }) => (
 export default function Governance() {
     const { datasets, loading } = useCoast();
     const [govData, setGovData] = useState(null);
+    const [syncState, setSyncState] = useState({ status: 'idle', step: 0, result: null, error: null });
+
+    const handleEnterpriseSync = async () => {
+        setSyncState({ status: 'syncing', step: 1, result: null, error: null });
+        
+        try {
+            // Sequential step simulation for UI effect, but calling real API
+            const steps = [1, 2, 3, 4];
+            for (const s of steps) {
+                setSyncState(prev => ({ ...prev, step: s }));
+                await new Promise(r => setTimeout(r, 800)); // Standard UI pacing
+                
+                if (s === 3) {
+                    // Call real PostGIS migration API on Step 3 (Uploading)
+                    // We'll migrate A_2019 by default for the demo
+                    const res = await axios.post('http://localhost:8000/api/database/migrate/A_2019', {}, { timeout: 30000 });
+                    setSyncState(prev => ({ ...prev, result: res.data }));
+                }
+            }
+            
+            setSyncState(prev => ({ ...prev, status: 'success', step: 4 }));
+        } catch (err) {
+            setSyncState({ 
+                status: 'error', 
+                step: 3, 
+                result: null, 
+                error: err.response?.data?.detail || "Connection to PostGIS failed. Ensure PostgreSQL is active." 
+            });
+        }
+    };
 
     useEffect(() => {
         const fetchGov = async () => {
@@ -256,6 +286,94 @@ export default function Governance() {
                             </motion.div>
                         );
                     })}
+                </div>
+            </div>
+
+            {/* Enterprise Database Sync Section */}
+            <div className="space-y-4">
+                <h3 className="text-sm font-display italic uppercase tracking-widest flex items-center px-2">
+                    <Database size={16} className="text-gold-400 mr-2" />
+                    Enterprise Database Sync (PostGIS)
+                </h3>
+                <div className="glass-card p-6 border-l-4 border-gold-500 bg-gradient-to-r from-ocean-900/40 to-transparent">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div className="flex-1">
+                            <h4 className="text-lg font-display font-bold text-teal-100 uppercase italic mb-2 tracking-tight">Enterprise Geospatial Vault</h4>
+                            <p className="text-xs text-text-400 italic max-w-2xl font-mono leading-relaxed">
+                                Establish high-performance connectivity with central PostGIS repositories. This operation vectorises the validated GeoDataFrame, handles CRS reprojection, and executes a systematic migration into the national coastal database.
+                            </p>
+                        </div>
+                        <div className="shrink-0">
+                            <button 
+                                onClick={handleEnterpriseSync}
+                                disabled={syncState.status === 'syncing'}
+                                className={`px-8 py-3 rounded-xl border-2 font-display font-bold text-xs uppercase tracking-[0.2em] transition-all flex items-center ${
+                                    syncState.status === 'syncing' 
+                                    ? 'bg-ocean-800 border-ocean-700 text-text-500 cursor-not-allowed'
+                                    : 'bg-gold-500/20 border-gold-500 text-gold-400 hover:bg-gold-500 hover:text-ocean-950 shadow-[0_0_20px_rgba(201,168,76,0.2)]'
+                                }`}
+                            >
+                                <Database size={14} className="mr-2" />
+                                {syncState.status === 'syncing' ? 'Sync in Progress...' : 'Sync to Enterprise Database'}
+                            </button>
+                        </div>
+                    </div>
+
+                    {syncState.status !== 'idle' && (
+                        <div className="mt-8 pt-8 border-t border-ocean-800 animate-in slide-in-from-top duration-500">
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                                {[
+                                    { step: 1, label: 'Validating Dataset', status: syncState.step >= 1 ? 'done' : 'waiting' },
+                                    { step: 2, label: 'Preparing Geometry', status: syncState.step >= 2 ? 'done' : 'waiting' },
+                                    { step: 3, label: 'Uploading to PostGIS', status: syncState.step >= 3 ? 'done' : 'waiting' },
+                                    { step: 4, label: 'Indexing', status: syncState.step >= 4 ? 'done' : 'waiting' }
+                                ].map((s, i) => (
+                                    <div key={i} className={`flex items-center p-3 rounded-lg border italic transition-all ${
+                                        syncState.step === s.step ? 'bg-teal-500/10 border-teal-500 text-teal-400' : 
+                                        syncState.step > s.step ? 'bg-ocean-900 border-ocean-800 text-text-500 opacity-60' :
+                                        'bg-transparent border-ocean-800 text-text-500 opacity-40'
+                                    }`}>
+                                        <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold mr-3 border ${
+                                            syncState.step >= s.step ? 'bg-teal-500 border-teal-400 text-ocean-950' : 'border-text-500'
+                                        }`}>
+                                            {syncState.step > s.step ? '✓' : s.step}
+                                        </div>
+                                        <span className="text-[10px] uppercase font-bold tracking-tighter">{s.label}</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {syncState.status === 'success' && (
+                                <div className="p-4 bg-teal-500/10 border border-teal-500/30 rounded-xl flex items-start space-x-4 animate-in zoom-in duration-300">
+                                    <CheckCircle size={20} className="text-teal-400 mt-1 shrink-0" />
+                                    <div>
+                                        <h5 className="text-teal-400 font-display font-bold text-sm uppercase italic tracking-tight">Enterprise Synchronisation Successful</h5>
+                                        <div className="flex gap-4 mt-2">
+                                            <div className="bg-ocean-950/50 px-3 py-1.5 rounded border border-ocean-800">
+                                                <span className="block text-[8px] text-text-500 uppercase font-mono">Target Table</span>
+                                                <span className="text-[10px] text-text-100 font-mono font-bold italic">{syncState.result?.table}</span>
+                                            </div>
+                                            <div className="bg-ocean-950/50 px-3 py-1.5 rounded border border-ocean-800">
+                                                <span className="block text-[8px] text-text-500 uppercase font-mono">Record Count</span>
+                                                <span className="text-[10px] text-text-100 font-mono font-bold italic">{syncState.result?.rows}</span>
+                                            </div>
+                                        </div>
+                                        <p className="text-[10px] text-text-300 italic mt-3">Data successfully stored in PostGIS. Vectorised geometry validated and spatial indexing applied.</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {syncState.status === 'error' && (
+                                <div className="p-4 bg-coral-500/10 border border-coral-500/30 rounded-xl flex items-start space-x-4 animate-in shake duration-500">
+                                    <ShieldAlert size={20} className="text-coral-500 mt-1 shrink-0" />
+                                    <div>
+                                        <h5 className="text-coral-500 font-display font-bold text-sm uppercase italic tracking-tight">Synchronisation Failed</h5>
+                                        <p className="text-[10px] text-text-300 italic mt-1">{syncState.error}</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
 

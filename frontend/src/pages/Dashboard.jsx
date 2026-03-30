@@ -142,7 +142,7 @@ export default function Dashboard() {
 
     // Calculate total HTL length
     const totalHTLAcrossAll = compData ? 
-        Object.values(compData).reduce((acc, site) => acc + site.length_2019, 0) : 18818;
+        Object.values(compData).reduce((acc, site) => acc + (site?.length_2019 || 0), 0) : 18818;
 
     const coastalPositions = {
         "A_2011":      [19.076, 72.827],
