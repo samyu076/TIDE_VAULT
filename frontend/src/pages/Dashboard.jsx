@@ -159,10 +159,40 @@ export default function Dashboard() {
 
     return (
         <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-            {/* Hero Header via Logo */}
-            <div className="flex justify-center py-4">
-                <TideVaultLogo size={50} showText={true} />
-            </div>
+            {/* Mission Statement Hero Section */}
+            <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass-card p-8 border-l-4 border-teal-500 bg-gradient-to-r from-teal-500/10 to-transparent"
+            >
+                <div className="flex flex-col md:flex-row items-center gap-6">
+                    <div className="p-4 bg-ocean-900 rounded-2xl border border-teal-500/30 shadow-lg shadow-teal-500/10">
+                        <TideVaultLogo size={60} showText={false} />
+                    </div>
+                    <div className="flex-1 space-y-3">
+                        <div className="flex items-center space-x-3">
+                            <h1 className="text-2xl font-display font-bold text-text-100 tracking-tight">
+                                TideVault <span className="text-teal-400 font-light">Governance Framework</span>
+                            </h1>
+                            <div className="px-2 py-0.5 rounded-full bg-teal-500/20 border border-teal-500/40 text-[9px] font-bold text-teal-400 tracking-widest uppercase">
+                                PROTOTYPE V1.2.0
+                            </div>
+                        </div>
+                        <p className="text-sm text-text-300 leading-relaxed max-w-4xl font-light">
+                            An <span className="text-teal-400 font-medium italic">Automated, AI-Assisted Geospatial Platform</span> designed for the Maharashtra Coastal Survey. 
+                            TideVault ingests raw coastal shapefiles, executes multi-epoch reliability scoring, detects structural anomalies via Machine Learning, 
+                            and generates certified CRZ compliance audits—all with <span className="text-teal-400 font-medium">zero manual intervention</span>.
+                        </p>
+                        <div className="flex flex-wrap gap-3 pt-2">
+                            {['AI-Anomaly Detection', 'ISO 19115 Standard', 'Auto-Reprojection', 'CRZ Audit Engine'].map(tag => (
+                                <span key={tag} className="text-[9px] font-mono font-bold text-text-500 uppercase tracking-widest border border-ocean-700 px-2 py-1 rounded-md bg-ocean-900/50">
+                                    {tag}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </motion.div>
 
             {/* Main Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
